@@ -1,24 +1,32 @@
 import { useState } from "react";
 
 const App = () => {
-  const [clicks, setClicks] = useState({
-    left: 0,
-    right: 0,
-  });
+  const [left, setLeft] = useState(0);
+  const [right, setRight] = useState(0);
 
-  const handleLeftClick = () => setClicks({ ...clicks, left: clicks.left + 1 });
+  const [allClicks, setAll] = useState([]);
 
-  const handleRightClick = () =>
-    setClicks({ ...clicks, right: clicks.right + 1 });
+  const handleLeftClick = () => {
+    setAll(allClicks.concat("L"));
+    setLeft(left + 1);
+  };
 
-  /* It is forbidden in React to mutate state directly, since it can result in unexpected side effects. Changing state has to always be done by setting the state to a new object. */
+  const handleRightClick = () => {
+    setAll(allClicks.concat("R"));
+    setRight(right + 1);
+  };
+
+  /* It's also possible in JavaScript to add items to an array with the push method. */
+  /* However, don't do this. The state of React components, like allClicks, must not be mutated directly. Even if mutating state appears to work in some cases, it can lead to problems that are very hard to debug. */
 
   return (
     <div>
-      {clicks.left}
+      {left}
       <button onClick={handleLeftClick}>left</button>
       <button onClick={handleRightClick}>right</button>
-      {clicks.right}
+      {right}
+
+      <p>{allClicks.join(" ")}</p>
     </div>
   );
 };
