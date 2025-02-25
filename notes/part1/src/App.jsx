@@ -1,17 +1,64 @@
 import { useState } from "react";
 
-/* const App = () => {
+/* const App1 = () => {
   const [value, setValue] = useState(10);
 
-  // Event handlers must always be a function or a reference to a function. The button will not work if the event handler is set to a variable of any other type.
+  const hello = () => {
+    const handler = () => console.log("hello world");
+    return handler;
+  };
 
   return (
     <div>
       {value}
-      {// <button onClick={() => console.log("clicked the button")}>button</button>}
+      <button onClick={hello()}>button</button>
+      // <button onClick={() => console.log("hello world")}>button</button>
+    </div>
+  );
+}; */
 
-      <button onClick={() => setValue(0)}>button</button>{" "} // Defining event handlers directly in the attribute of the button is not necessarily the best possible idea.
-      
+const App2 = () => {
+  const [value, setValue] = useState(10);
+
+  /* const hello = (who) => {
+    const handler = () => {
+      console.log("hello", who);
+    };
+    return handler;
+  }; */
+
+  const hello = (who) => () => {
+    console.log("hello", who);
+  };
+
+  /* Functions returning functions can be utilized in defining generic functionality that can be customized with parameters. The hello function that creates the event handlers can be thought of as a factory that produces customized event handlers meant for greeting users. */
+
+  return (
+    <div>
+      {value}
+
+      <button onClick={hello("world")}>button</button>
+      <button onClick={hello("react")}>button</button>
+      <button onClick={hello("function")}>button</button>
+    </div>
+  );
+};
+
+/* const App = () => {
+  const [value, setValue] = useState(10);
+
+  const setToValue = (newValue) => () => {
+    console.log("value now", newValue);
+    setValue(newValue);
+  };
+
+  return (
+    <div>
+      {value}
+
+      <button onClick={setToValue(1000)}>thousand</button>
+      <button onClick={setToValue(0)}>reset</button>
+      <button onClick={setToValue(value + 1)}>increment</button>
     </div>
   );
 }; */
@@ -19,17 +66,21 @@ import { useState } from "react";
 const App = () => {
   const [value, setValue] = useState(10);
 
-  const handleClick = () => {
-    console.log("clicked the button");
-    setValue(0);
+  const setToValue = (newValue) => {
+    console.log("value now", newValue);
+    setValue(newValue);
   };
 
   return (
     <div>
       {value}
-      <button onClick={handleClick}>button</button>
+      <button onClick={() => setToValue(1000)}>thousand</button>
+      <button onClick={() => setToValue(0)}>reset</button>
+      <button onClick={() => setToValue(value + 1)}>increment</button>
     </div>
   );
 };
+
+/* Choosing between the two presented ways of defining your event handlers is mostly a matter of taste. */
 
 export default App;
