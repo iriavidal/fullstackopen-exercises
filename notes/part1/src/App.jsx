@@ -3,21 +3,37 @@ import { useState } from "react";
 const App = () => {
   const [left, setLeft] = useState(0);
   const [right, setRight] = useState(0);
-
   const [allClicks, setAll] = useState([]);
 
-  const handleLeftClick = () => {
+  const [total, setTotal] = useState(0);
+
+  /* const handleLeftClick = () => {
     setAll(allClicks.concat("L"));
     setLeft(left + 1);
+    setTotal(left + right);
   };
 
   const handleRightClick = () => {
     setAll(allClicks.concat("R"));
     setRight(right + 1);
+    setTotal(left + right);
+  }; */
+
+  const handleLeftClick = () => {
+    setAll(allClicks.concat("L"));
+    const updatedLeft = left + 1;
+    setLeft(updatedLeft);
+    setTotal(updatedLeft + right);
   };
 
-  /* It's also possible in JavaScript to add items to an array with the push method. */
-  /* However, don't do this. The state of React components, like allClicks, must not be mutated directly. Even if mutating state appears to work in some cases, it can lead to problems that are very hard to debug. */
+  const handleRightClick = () => {
+    setAll(allClicks.concat("R"));
+    const updatedRight = right + 1;
+    setRight(updatedRight);
+    setTotal(updatedRight + left);
+  };
+
+  /* State update in React happens asynchronously, i.e. not immediately but "at some point" before the component is rendered again. */
 
   return (
     <div>
@@ -25,8 +41,9 @@ const App = () => {
       <button onClick={handleLeftClick}>left</button>
       <button onClick={handleRightClick}>right</button>
       {right}
-
       <p>{allClicks.join(" ")}</p>
+
+      <p>total {total}</p>
     </div>
   );
 };
