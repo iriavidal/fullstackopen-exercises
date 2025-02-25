@@ -18,6 +18,10 @@ const App = () => {
 
   const [total, setTotal] = useState(0);
 
+  /* The useState function (as well as the useEffect function) must not be called from inside of a loop, a conditional expression, or any place that is not a function defining a component. This must be done to ensure that the hooks are always called in the same order, and if this isn't the case the application will behave erratically. */
+
+  /* To recap, hooks may only be called from the inside of a function body that defines a React component. */
+
   const handleLeftClick = () => {
     setAll(allClicks.concat("L"));
     const updatedLeft = left + 1;
@@ -31,8 +35,6 @@ const App = () => {
     setRight(updatedRight);
     setTotal(updatedRight + left);
   };
-
-  debugger;
 
   return (
     <div>
