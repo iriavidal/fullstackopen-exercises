@@ -11,6 +11,13 @@ const App = (props) => {
           ))}
         </ul>
       </ul>
+
+      {/* <ul>
+        {notes.map((note, i) => (
+          <li key={i}>{note.content}</li>
+        ))}
+      </ul> */}
+      {/* This is, however, not recommended and can create undesired problems even if it seems to be working just fine. */}
     </div>
   );
 };
