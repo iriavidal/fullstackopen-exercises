@@ -17,7 +17,7 @@ const Part = (props) => {
 };
 
 const Content = (props) => {
-  console.log(props.parts);
+  //console.log(props.parts);
   const parts = props.parts;
 
   return (
@@ -29,14 +29,28 @@ const Content = (props) => {
   );
 };
 
+const Total = (props) => {
+  const parts = props.parts;
+  const totalExercises = parts.reduce((sum, part) => sum + part.exercises, 0);
+
+  return (
+    <>
+      <p>
+        <strong>total of {totalExercises} exercises</strong>
+      </p>
+    </>
+  );
+};
+
 const Course = (props) => {
-  console.log(props.course);
+  //console.log(props.course);
   const course = props.course;
 
   return (
     <>
       <Header course={course.name}></Header>
       <Content parts={course.parts}></Content>
+      <Total parts={course.parts}></Total>
     </>
   );
 };
