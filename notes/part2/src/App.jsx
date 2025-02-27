@@ -1,6 +1,14 @@
-import { Note } from "./components/Note";
+import { useState } from "react";
+import Note from "./components/Note";
 
-const App = ({ notes }) => {
+const App = (props) => {
+  const [notes, setNotes] = useState(props.notes);
+
+  const addNote = (event) => {
+    event.preventDefault();
+    console.log("button clicked", event.target);
+  };
+
   return (
     <div>
       <h1>Notes</h1>
@@ -8,8 +16,12 @@ const App = ({ notes }) => {
         {notes.map((note) => (
           <Note key={note.id} note={note} />
         ))}
-        {/* Note that the key attribute must now be defined for the Note components, and not for the li tags like before. */}
       </ul>
+
+      <form onSubmit={addNote}>
+        <input />
+        <button type="submit">save</button>
+      </form>
     </div>
   );
 };
