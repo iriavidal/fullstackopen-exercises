@@ -12,9 +12,15 @@ const App = () => {
     };
 
     //console.log(personObject);
+    //console.log(persons.findIndex((el) => el.name === personObject.name));
 
-    setPersons(persons.concat(personObject));
-    setNewName("");
+    const index = persons.findIndex((el) => el.name === personObject.name);
+    if (index != -1) {
+      alert(`${personObject.name} is already added to phonebook`);
+    } else {
+      setPersons(persons.concat(personObject));
+      setNewName("");
+    }
   };
 
   const handlePersonChange = (e) => {
