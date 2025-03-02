@@ -3,6 +3,8 @@ import { useState } from "react";
 const App = () => {
   const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
   const [newName, setNewName] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const addPerson = (e) => {
     e.preventDefault();
@@ -23,15 +25,26 @@ const App = () => {
     }
   };
 
-  const handlePersonChange = (e) => {
-    //console.log(e.target.value);
-    setNewName(e.target.value);
-  };
+  const handlePersonChange = (e) => setNewName(e.target.value);
+  const handlePhoneChange = (e) => setNewPhone(e.target.value);
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+
+  const filteredPersons = persons.filter((person) =>
+    person.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  console.log(filteredPersons);
 
   return (
     <>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
+      <div>
+        filter shown with:{" "}
+        <input type="text" value={searchTerm} onChange={handleSearchChange} />
+      </div>
+
       <form onSubmit={addPerson}>
+        <h2>add a new</h2>
         <div>
           name:{" "}
           <input type="text" value={newName} onChange={handlePersonChange} />
@@ -40,10 +53,13 @@ const App = () => {
           <button type="submit">add</button>
         </div>
       </form>
+
       <h2>Numbers</h2>
       <ul>
-        {persons.map((person, index) => (
-          <li key={index}>{person.name}</li>
+        {filteredPersons.map((person, index) => (
+          <li key={index}>
+            {person.name} ({person.phone})
+          </li>
         ))}
       </ul>
     </>
