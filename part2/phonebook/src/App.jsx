@@ -1,7 +1,9 @@
 import { useState } from "react";
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", phone: "936487634" },
+  ]);
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -9,20 +11,15 @@ const App = () => {
   const addPerson = (e) => {
     e.preventDefault();
 
-    const personObject = {
-      name: newName,
-    };
+    if (!newName.trim()) return alert("Name is required");
+    if (!newPhone.trim()) return alert("Phone is required");
 
-    //console.log(personObject);
-    //console.log(persons.findIndex((el) => el.name === personObject.name));
+    const index = persons.findIndex((el) => el.name === newName);
+    if (index !== -1) return alert(`${newName} is already added to phonebook`);
 
-    const index = persons.findIndex((el) => el.name === personObject.name);
-    if (index != -1) {
-      alert(`${personObject.name} is already added to phonebook`);
-    } else {
-      setPersons(persons.concat(personObject));
-      setNewName("");
-    }
+    setPersons([...persons, { name: newName, phone: newPhone }]);
+    setNewName("");
+    setNewPhone("");
   };
 
   const handlePersonChange = (e) => setNewName(e.target.value);
@@ -46,8 +43,12 @@ const App = () => {
       <form onSubmit={addPerson}>
         <h2>add a new</h2>
         <div>
-          name:{" "}
+          name:
           <input type="text" value={newName} onChange={handlePersonChange} />
+        </div>
+        <div>
+          number:{" "}
+          <input type="tel" value={newPhone} onChange={handlePhoneChange} />
         </div>
         <div>
           <button type="submit">add</button>
