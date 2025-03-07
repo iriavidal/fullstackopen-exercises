@@ -71,20 +71,40 @@ const App = () => {
     if (!newName.trim()) return alert("Name is required");
     if (!newPhone.trim()) return alert("Phone is required");
 
-    const index = persons.findIndex((el) => el.name === newName);
-    if (index !== -1) return alert(`${newName} is already added to phonebook`);
+    const existingPerson = persons.find((p) => p.name === newName);
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${newName} is already in the phonebook. Do you want to replace the old number with the new one?`
+      );
 
-    const personObject = {
-      name: newName,
-      number: newPhone,
-    };
+      if (confirmUpdate) {
+        const updatedPerson = { ...existingPerson, number: newPhone };
+        personService
+          .updatePerson(existingPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((p) =>
+                p.id !== existingPerson.id ? p : returnedPerson
+              )
+            );
+            setNewName("");
+            setNewPhone("");
+          })
+          .catch((error) => {
+            alert(
+              `Error updating ${newName}. The contact may have been removed.`
+            );
+          });
+      }
+      return;
+    }
 
+    const personObject = { name: newName, number: newPhone };
     personService.create(personObject).then((returnedPerson) => {
       setPersons(persons.concat(returnedPerson));
       setNewName("");
       setNewPhone("");
     });
-    console.log(persons);
   };
 
   const handlePersonChange = (e) => setNewName(e.target.value);
