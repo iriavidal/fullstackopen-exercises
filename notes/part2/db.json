@@ -18,12 +18,12 @@
     {
       "id": "4",
       "content": "tyutyu",
-      "important": false
+      "important": true
     },
     {
       "id": "5",
       "content": "234234",
-      "important": false
+      "important": true
     }
   ]
 }
