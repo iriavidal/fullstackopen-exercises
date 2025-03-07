@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import personService from "./services/persons";
 
 const Filter = ({ searchTerm, handleSearchChange }) => (
   <div>
@@ -52,8 +53,9 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+      console.log(persons);
     });
   }, []);
 
@@ -65,9 +67,17 @@ const App = () => {
     const index = persons.findIndex((el) => el.name === newName);
     if (index !== -1) return alert(`${newName} is already added to phonebook`);
 
-    setPersons([...persons, { name: newName, number: newPhone }]);
-    setNewName("");
-    setNewPhone("");
+    const personObject = {
+      name: newName,
+      number: newPhone,
+    };
+
+    personService.create(personObject).then((returnedPerson) => {
+      setPersons(persons.concat(returnedPerson));
+      setNewName("");
+      setNewPhone("");
+    });
+    console.log(persons);
   };
 
   const handlePersonChange = (e) => setNewName(e.target.value);
