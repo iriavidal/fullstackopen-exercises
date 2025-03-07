@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Note from "./components/Note";
+import noteService from "./services/notes";
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -8,13 +9,13 @@ const App = () => {
   const [showAll, setShowAll] = useState(true);
 
   useEffect(() => {
-    console.log("effect");
-    axios.get("http://localhost:3001/notes").then((response) => {
-      console.log("promise fulfilled");
+    /* noteService.getAll().then((response) => {
       setNotes(response.data);
+    }); */
+    noteService.getAll().then((initialNotes) => {
+      setNotes(initialNotes);
     });
   }, []);
-  console.log("render", notes.length, "notes");
 
   const addNote = (event) => {
     event.preventDefault();
@@ -24,8 +25,12 @@ const App = () => {
       id: String(notes.length + 1),
     };
 
-    axios.post("http://localhost:3001/notes", noteObject).then((response) => {
+    /* noteService.create(noteObject).then((response) => {
       setNotes(notes.concat(response.data));
+      setNewNote("");
+    }); */
+    noteService.create(noteObject).then((returnedNote) => {
+      setNotes(notes.concat(returnedNote));
       setNewNote("");
     });
   };
@@ -36,22 +41,16 @@ const App = () => {
 
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
 
-  /* const toggleImportanceOf = (id) => {
-    console.log(`importance of ${id} needs to be toggled`);
-  }; */
-
   const toggleImportanceOf = (id) => {
-    const url = `http://localhost:3001/notes/${id}`;
     const note = notes.find((n) => n.id === id);
     const changedNote = { ...note, important: !note.important };
-    /* we created a new note bc we must never mutate state directly in React */
-    /* the new object changedNote is only a so-called shallow copy, meaning that the values of the new object are the same as the values of the old object */
 
-    axios.put(url, changedNote).then((response) => {
+    /* noteService.update(id, changedNote).then((response) => {
       setNotes(notes.map((note) => (note.id !== id ? note : response.data)));
-      /* The callback function sets the component's notes state to a new array that contains all the items from the previous notes array, except for the old note which is replaced by the updated version of it returned by the server */
+    }); */
+    noteService.update(id, changedNote).then((returnedNote) => {
+      setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)));
     });
-    /* PUT replaces the note */
   };
 
   return (
