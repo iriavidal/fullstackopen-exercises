@@ -32,19 +32,26 @@ const PersonForm = ({
   </form>
 );
 
-const Person = ({ person }) => (
+const Person = ({ person, toggleDelete }) => (
   <li>
-    {person.name} ({person.number})
+    {person.name} ({person.number}) -{" "}
+    <button onClick={toggleDelete}>delete</button>
   </li>
 );
 
-const Persons = ({ persons }) => (
-  <ul>
-    {persons.map((person, index) => (
-      <Person key={index} person={person} />
-    ))}
-  </ul>
-);
+const Persons = ({ persons, toggle }) => {
+  return (
+    <ul>
+      {persons.map((person, index) => (
+        <Person
+          key={index}
+          person={person}
+          toggleDelete={() => toggle(person.id)}
+        />
+      ))}
+    </ul>
+  );
+};
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -88,6 +95,22 @@ const App = () => {
     person.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const toggleDeleteId = (id) => {
+    //console.log(id);
+    const person = persons.find((p) => p.id === id);
+    if (!window.confirm(`Are you sure you want to delete ${person.name}?`))
+      return;
+
+    personService
+      .remove(id)
+      .then(() => {
+        setPersons(persons.filter((person) => person.id !== id));
+      })
+      .catch((error) => {
+        console.error("Error deleting person:", error);
+      });
+  };
+
   return (
     <div>
       <h1>Phonebook</h1>
@@ -100,7 +123,7 @@ const App = () => {
         handlePhoneChange={handlePhoneChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} toggle={toggleDeleteId} />
     </div>
   );
 };
