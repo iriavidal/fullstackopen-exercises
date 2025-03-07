@@ -53,11 +53,32 @@ const Persons = ({ persons, toggle }) => {
   );
 };
 
+const Notification = ({ message }) => {
+  if (!message) return null;
+
+  return (
+    <div
+      style={{
+        color: "green",
+        background: "lightgrey",
+        fontSize: "20px",
+        border: "2px solid green",
+        borderRadius: "5px",
+        padding: "10px",
+        marginBottom: "10px",
+      }}
+    >
+      {message}
+    </div>
+  );
+};
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
@@ -87,6 +108,8 @@ const App = () => {
                 p.id !== existingPerson.id ? p : returnedPerson
               )
             );
+            setNotification(`Updated ${newName}'s number successfully`);
+            setTimeout(() => setNotification(null), 3000);
             setNewName("");
             setNewPhone("");
           })
@@ -102,6 +125,8 @@ const App = () => {
     const personObject = { name: newName, number: newPhone };
     personService.create(personObject).then((returnedPerson) => {
       setPersons(persons.concat(returnedPerson));
+      setNotification(`Added ${newName} to the phonebook`);
+      setTimeout(() => setNotification(null), 3000);
       setNewName("");
       setNewPhone("");
     });
@@ -134,6 +159,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={notification} />
       <Filter searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
       <PersonForm
         addPerson={addPerson}
