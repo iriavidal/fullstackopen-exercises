@@ -53,16 +53,16 @@ const Persons = ({ persons, toggle }) => {
   );
 };
 
-const Notification = ({ message }) => {
+const Notification = ({ message, isError }) => {
   if (!message) return null;
 
   return (
     <div
       style={{
-        color: "green",
+        color: isError ? "red" : "green",
         background: "lightgrey",
         fontSize: "20px",
-        border: "2px solid green",
+        border: `2px solid ${isError ? "red" : "green"}`,
         borderRadius: "5px",
         padding: "10px",
         marginBottom: "10px",
@@ -79,6 +79,7 @@ const App = () => {
   const [newPhone, setNewPhone] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [notification, setNotification] = useState(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
@@ -108,15 +109,23 @@ const App = () => {
                 p.id !== existingPerson.id ? p : returnedPerson
               )
             );
+            setError(false);
             setNotification(`Updated ${newName}'s number successfully`);
             setTimeout(() => setNotification(null), 3000);
             setNewName("");
             setNewPhone("");
           })
           .catch((error) => {
-            alert(
-              `Error updating ${newName}. The contact may have been removed.`
+            console.log(error.response);
+
+            setError(true);
+            setNotification(
+              `Information of ${newName} has already been removed from server`
             );
+            setTimeout(() => setNotification(null), 3000);
+            setNewName("");
+            setNewPhone("");
+            setPersons(persons.filter((p) => p.id !== existingPerson.id));
           });
       }
       return;
@@ -125,6 +134,7 @@ const App = () => {
     const personObject = { name: newName, number: newPhone };
     personService.create(personObject).then((returnedPerson) => {
       setPersons(persons.concat(returnedPerson));
+      setError(false);
       setNotification(`Added ${newName} to the phonebook`);
       setTimeout(() => setNotification(null), 3000);
       setNewName("");
@@ -159,7 +169,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <Notification message={notification} />
+      <Notification message={notification} isError={error} />
       <Filter searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
       <PersonForm
         addPerson={addPerson}
