@@ -1,24 +1,3 @@
 {
-  "persons": [
-    {
-      "name": "Arto Hellas",
-      "number": "23524",
-      "id": "1"
-    },
-    {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": "2"
-    },
-    {
-      "id": "b103",
-      "name": "eded",
-      "number": "252345"
-    },
-    {
-      "id": "3d03",
-      "name": "thfdh",
-      "number": "563456"
-    }
-  ]
+  "persons": []
 }
