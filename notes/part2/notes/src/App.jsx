@@ -23,7 +23,7 @@ const Footer = () => {
 // Componente principal de la aplicación
 const App = () => {
   // Estado para almacenar la lista de notas
-  const [notes, setNotes] = useState(null);
+  const [notes, setNotes] = useState([]); // Se inicia con un array vacío porque se van a guardar varias cosas, si se guardara solo una sería null
   // Estado para almacenar el contenido de una nueva nota
   const [newNote, setNewNote] = useState("");
   // Estado para alternar entre mostrar todas las notas o solo las importantes
