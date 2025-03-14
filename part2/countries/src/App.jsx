@@ -1,34 +1,41 @@
 import { useEffect, useState } from "react";
 import countriesService from "./services/countries";
 
-const Countries = ({ countries }) => {
+const Country = ({ country }) => {
+  //console.log(country);
+
+  return (
+    <>
+      <h1>{country.name.common}</h1>
+      <p>Capital: {country.capital}</p>
+      <p>Area: {country.area}</p>
+      <p>Population: {country.population}</p>
+      <h2>Languages</h2>
+      <ul>
+        {Object.entries(country.languages).map(([code, language]) => (
+          <li key={code}>{language}</li>
+        ))}
+      </ul>
+      <img src={country.flags.png} alt={country.flags.alt} />
+    </>
+  );
+};
+
+const Countries = ({ countries, onShowDetails }) => {
   if (countries.length > 10) {
     return <p>Too many matches, specify another filter</p>;
   }
 
   if (countries.length == 1) {
-    return (
-      <>
-        <h1>{countries[0].name.common}</h1>
-        <p>Capital: {countries[0].capital}</p>
-        <p>Area: {countries[0].area}</p>
-        <p>Population: {countries[0].population}</p>
-        <h2>Languages</h2>
-        <ul>
-          {Object.entries(countries[0].languages).map(([code, language]) => (
-            <li key={code}>{language}</li>
-          ))}
-        </ul>
-        <img src={countries[0].flags.png} alt={countries[0].flags.alt} />
-      </>
-    );
+    return <Country country={countries[0]}></Country>;
   }
 
   return (
     <>
       {countries.map((country, index) => (
         <p key={index} value={country.name.common}>
-          {country.name.common}
+          {country.name.common} -{" "}
+          <button onClick={() => onShowDetails(country)}>show</button>
         </p>
       ))}
     </>
@@ -38,6 +45,7 @@ const Countries = ({ countries }) => {
 function App() {
   const [countries, setCountries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selected, setSelected] = useState(null);
 
   const handleSearchChange = (e) => setSearchTerm(e.target.value);
 
@@ -51,11 +59,19 @@ function App() {
     country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleShowDetails = (country) => {
+    setSelected(country);
+  };
+
   return (
     <>
       find countries{" "}
       <input type="text" value={searchTerm} onChange={handleSearchChange} />
-      <Countries countries={filteredCountries}></Countries>
+      <Countries
+        countries={filteredCountries}
+        onShowDetails={handleShowDetails}
+      />
+      {selected && <Country country={selected} />}
     </>
   );
 }
