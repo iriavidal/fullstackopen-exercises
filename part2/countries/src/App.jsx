@@ -3,6 +3,15 @@ import countriesService from "./services/countries";
 
 const Country = ({ country }) => {
   //console.log(country);
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    if (!country.capitalInfo || !country.capitalInfo.latlng) return;
+
+    const [lat, lon] = country.capitalInfo.latlng;
+
+    countriesService.getWeather(lat, lon).then((data) => setWeather(data));
+  }, [country]);
 
   return (
     <>
@@ -17,6 +26,14 @@ const Country = ({ country }) => {
         ))}
       </ul>
       <img src={country.flags.png} alt={country.flags.alt} />
+
+      {weather && (
+        <>
+          <h2>Weather in {country.capital}</h2>
+          <p>Temperature: {weather.temperature} °C</p>
+          <p>Wind speed: {weather.windspeed} km/h</p>
+        </>
+      )}
     </>
   );
 };
@@ -50,9 +67,9 @@ function App() {
   const handleSearchChange = (e) => setSearchTerm(e.target.value);
 
   useEffect(() => {
-    countriesService.getAll().then((countriesAPI) => {
-      setCountries(countriesAPI);
-    });
+    countriesService
+      .getAll()
+      .then((countriesAPI) => setCountries(countriesAPI));
   }, []);
 
   const filteredCountries = countries.filter((country) =>
