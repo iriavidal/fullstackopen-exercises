@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import personService from "./services/persons";
 
 const Filter = ({ searchTerm, handleSearchChange }) => (
   <div>
@@ -31,29 +32,59 @@ const PersonForm = ({
   </form>
 );
 
-const Person = ({ person }) => (
+const Person = ({ person, toggleDelete }) => (
   <li>
-    {person.name} ({person.number})
+    {person.name} ({person.number}) -{" "}
+    <button onClick={toggleDelete}>delete</button>
   </li>
 );
 
-const Persons = ({ persons }) => (
-  <ul>
-    {persons.map((person, index) => (
-      <Person key={index} person={person} />
-    ))}
-  </ul>
-);
+const Persons = ({ persons, toggle }) => {
+  return (
+    <ul>
+      {persons.map((person, index) => (
+        <Person
+          key={index}
+          person={person}
+          toggleDelete={() => toggle(person.id)}
+        />
+      ))}
+    </ul>
+  );
+};
+
+const Notification = ({ message, isError }) => {
+  if (!message) return null;
+
+  return (
+    <div
+      style={{
+        color: isError ? "red" : "green",
+        background: "lightgrey",
+        fontSize: "20px",
+        border: `2px solid ${isError ? "red" : "green"}`,
+        borderRadius: "5px",
+        padding: "10px",
+        marginBottom: "10px",
+      }}
+    >
+      {message}
+    </div>
+  );
+};
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [notification, setNotification] = useState(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+      console.log(persons);
     });
   }, []);
 
@@ -62,12 +93,53 @@ const App = () => {
     if (!newName.trim()) return alert("Name is required");
     if (!newPhone.trim()) return alert("Phone is required");
 
-    const index = persons.findIndex((el) => el.name === newName);
-    if (index !== -1) return alert(`${newName} is already added to phonebook`);
+    const existingPerson = persons.find((p) => p.name === newName);
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${newName} is already in the phonebook. Do you want to replace the old number with the new one?`
+      );
 
-    setPersons([...persons, { name: newName, number: newPhone }]);
-    setNewName("");
-    setNewPhone("");
+      if (confirmUpdate) {
+        const updatedPerson = { ...existingPerson, number: newPhone };
+        personService
+          .updatePerson(existingPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((p) =>
+                p.id !== existingPerson.id ? p : returnedPerson
+              )
+            );
+            setError(false);
+            setNotification(`Updated ${newName}'s number successfully`);
+            setTimeout(() => setNotification(null), 3000);
+            setNewName("");
+            setNewPhone("");
+          })
+          .catch((error) => {
+            console.log(error.response);
+
+            setError(true);
+            setNotification(
+              `Information of ${newName} has already been removed from server`
+            );
+            setTimeout(() => setNotification(null), 3000);
+            setNewName("");
+            setNewPhone("");
+            setPersons(persons.filter((p) => p.id !== existingPerson.id));
+          });
+      }
+      return;
+    }
+
+    const personObject = { name: newName, number: newPhone };
+    personService.create(personObject).then((returnedPerson) => {
+      setPersons(persons.concat(returnedPerson));
+      setError(false);
+      setNotification(`Added ${newName} to the phonebook`);
+      setTimeout(() => setNotification(null), 3000);
+      setNewName("");
+      setNewPhone("");
+    });
   };
 
   const handlePersonChange = (e) => setNewName(e.target.value);
@@ -78,9 +150,26 @@ const App = () => {
     person.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const toggleDeleteId = (id) => {
+    //console.log(id);
+    const person = persons.find((p) => p.id === id);
+    if (!window.confirm(`Are you sure you want to delete ${person.name}?`))
+      return;
+
+    personService
+      .remove(id)
+      .then(() => {
+        setPersons(persons.filter((person) => person.id !== id));
+      })
+      .catch((error) => {
+        console.error("Error deleting person:", error);
+      });
+  };
+
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={notification} isError={error} />
       <Filter searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
       <PersonForm
         addPerson={addPerson}
@@ -90,7 +179,7 @@ const App = () => {
         handlePhoneChange={handlePhoneChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} toggle={toggleDeleteId} />
     </div>
   );
 };
