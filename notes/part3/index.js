@@ -2,6 +2,19 @@ const express = require("express");
 const app = express();
 
 app.use(express.json());
+/* Los middleware son funciones que se pueden utilizar para manejar objetos de request y response. */
+
+const requestLogger = (request, response, next) => {
+  console.log("Method:", request.method);
+  console.log("Path:  ", request.path);
+  console.log("Body:  ", request.body);
+  console.log("---");
+  next();
+};
+
+/* Recuerda, las funciones middleware se llaman en el orden en el que son encontradas por el motor de JavaScript. Ten en cuenta que json-parser se encuentra definido antes que requestLogger, porque de lo contrario, ¡request.body no se inicializará cuando se ejecute el logger! */
+
+app.use(requestLogger);
 
 let notes = [
   {
@@ -74,6 +87,12 @@ app.post("/api/notes", (request, response) => {
 
   response.json(note);
 });
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+
+app.use(unknownEndpoint);
 
 const PORT = 3001;
 app.listen(PORT, () => {
