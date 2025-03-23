@@ -70,7 +70,14 @@ app.post("/api/persons", (request, response) => {
 
   if (!body.name || !body.number) {
     return response.status(400).json({
-      error: "content missing",
+      error: "name or number missing",
+    });
+  }
+
+  const index = persons.findIndex((person) => person.name === body.name);
+  if (index !== -1) {
+    return response.status(400).json({
+      error: "name must be unique",
     });
   }
 
