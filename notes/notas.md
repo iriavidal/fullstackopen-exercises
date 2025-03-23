@@ -2,7 +2,9 @@
 
 ## Índice
 
-- [Por qué algunos elementos se guardan en estados y no en variables](#por-que-algunos-elementos-se-guardan-en-estados-y-no-en-variables)
+- [Por qué algunos elementos se guardan en estados y no en variables](#Por-que-algunos-elementos-se-guardan-en-estados-y-no-en-variables)
+
+- [Acerca de los tipos de solicitudes HTTP](#Acerca-de-los-tipos-de-solicitudes-HTTP)
 
 ## Por qué algunos elementos se guardan en estados y no en variables
 
@@ -73,3 +75,15 @@ useEffect(() => {
   console.log("El estado de notas cambió:", notes);
 }, [notes]); // Se ejecuta cada vez que las notas cambian
 ```
+
+## Acerca de los tipos de solicitudes HTTP
+
+El estándar HTTP define dos propiedades importantes para las solicitudes: **seguridad** e **idempotencia**.
+
+1. **Seguridad (GET y HEAD)**: Las solicitudes GET y HEAD deben ser seguras, lo que significa que no deben cambiar nada en el servidor, solo obtener datos. En otras palabras, una solicitud GET no debería alterar el estado de la base de datos ni generar efectos secundarios.
+
+2. **Idempotencia (GET, HEAD, PUT, DELETE)**: Las solicitudes GET, HEAD, PUT y DELETE deben ser idempotentes. Esto significa que enviar la misma solicitud varias veces debe dar el mismo resultado, sin importar cuántas veces se repita. Por ejemplo, si se hace una solicitud PUT varias veces con los mismos datos, el resultado será el mismo.
+
+3. **POST**: Es la única solicitud que no es ni segura ni idempotente. Si se envía varias veces, por ejemplo, añadiendo la misma nota, cada solicitud creará una nueva entrada, lo que puede cambiar el estado del servidor.
+
+En resumen, GET y HEAD deben ser seguros (sin efectos secundarios), mientras que GET, HEAD, PUT y DELETE deben ser idempotentes (con el mismo resultado sin importar cuántas veces se realicen). POST es el único que no sigue estas reglas.
