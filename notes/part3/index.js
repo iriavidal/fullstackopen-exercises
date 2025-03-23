@@ -1,13 +1,36 @@
 // Importamos el módulo de CommonJS "http" de Node.js para poder crear un servidor
 const http = require("http");
 
-// Creamos el servidor con "http.createServer()" y definimos una función callback que maneja cada solicitud entrante
+/* // Creamos el servidor con "http.createServer()" y definimos una función callback que maneja cada solicitud entrante
 const app = http.createServer((request, response) => {
   // Configuramos la cabecera de la respuesta con un código de estado 200 (OK) y especificamos que el contenido será de tipo texto plano
   response.writeHead(200, { "Content-Type": "text/plain" });
 
   // Enviamos la respuesta con el mensaje "Hello World" y finalizamos la respuesta
   response.end("Hello World");
+}); */
+
+let notes = [
+  {
+    id: 1,
+    content: "HTML is easy",
+    important: true,
+  },
+  {
+    id: 2,
+    content: "Browser can execute only JavaScript",
+    important: false,
+  },
+  {
+    id: 3,
+    content: "GET and POST are the most important methods of HTTP protocol",
+    important: true,
+  },
+];
+
+const app = http.createServer((request, response) => {
+  response.writeHead(200, { "Content-Type": "application/json" });
+  response.end(JSON.stringify(notes)); // Transforma el JSON a string
 });
 
 // Definimos el puerto en el que se ejecutará el servidor
