@@ -29,14 +29,6 @@ app.get("/api/notes", (request, response) => {
 
 // Obtener una sola nota a partir de su id
 app.get("/api/notes/:id", (request, response) => {
-  /* const id = request.params.id;
-  const note = notes.find((note) => {
-    console.log(note.id, typeof note.id, id, typeof id, note.id === id);
-    return note.id === id;
-  });
-  console.log(note);
-  response.json(note); */
-
   const id = Number(request.params.id);
   const note = notes.find((note) => note.id === id);
 
@@ -44,8 +36,15 @@ app.get("/api/notes/:id", (request, response) => {
     response.json(note);
   } else {
     response.status(404).end();
-    /* Dado que no se adjuntan datos a la respuesta, utilizamos el método status para establecer el estado y el método end para responder a la solicitud sin enviar ningún dato. */
   }
+});
+
+// Eliminar una nota a partir de su id
+app.delete("/api/notes/:id", (request, response) => {
+  const id = Number(request.params.id);
+  notes = notes.filter((note) => note.id !== id);
+
+  response.status(204).end();
 });
 
 const PORT = 3001;
