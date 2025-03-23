@@ -30,6 +30,15 @@ app.get("/", (request, response) => {
   response.send("<h1>Phonebook Backend</h1><h2>Iria Vidal</h2>");
 });
 
+app.get("/info", (request, response) => {
+  const now = new Date();
+
+  response.send(`
+        <p>Phonebook has info for ${persons.length} people</p>
+        <p>${now}</p>
+        `);
+});
+
 app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
