@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 
 app.use(express.json());
+app.use(cors());
 /* Los middleware son funciones que se pueden utilizar para manejar objetos de request y response. */
 
 const requestLogger = (request, response, next) => {
