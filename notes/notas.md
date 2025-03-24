@@ -100,3 +100,10 @@ app.use(cors())
 ```
 
 Esto permite que el frontend en `localhost:5173/` pueda comunicarse con el backend en `localhost:3001`. Ahora el frontend puede obtener las notas correctamente, aunque algunas funcionalidades aún no están implementadas en el backend.
+
+## dashboard.render.com
+
+### Configuración
+
+![Configuración render 1](./assets/render1.jpg)
+![Configuración render 2](./assets/render2.jpg)
