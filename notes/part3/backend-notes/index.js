@@ -4,6 +4,7 @@ const cors = require("cors");
 
 app.use(express.json());
 app.use(cors());
+app.use(express.static("dist")); // Siempre que Express recibe una solicitud HTTP GET, primero verificará si el directorio dist contiene un archivo correspondiente a la dirección de la solicitud. Si se encuentra un archivo correcto, Express lo devolverá.
 /* Los middleware son funciones que se pueden utilizar para manejar objetos de request y response. */
 
 const requestLogger = (request, response, next) => {
