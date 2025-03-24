@@ -1,6 +1,6 @@
 import axios from "axios"; // Importa la librería axios para realizar solicitudes HTTP.
 
-const baseUrl = "http://localhost:3001/api/notes"; // Define la URL base del backend donde se almacenan las notas.
+const baseUrl = "/api/notes"; // Define la URL base del backend donde se almacenan las notas.
 
 // Función para obtener todas las notas desde el backend.
 const getAll = () => {
