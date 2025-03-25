@@ -21,12 +21,29 @@ const noteSchema = new mongoose.Schema({
 
 const Note = mongoose.model("Note", noteSchema);
 
-const note = new Note({
+// Añadir nota
+/* const note = new Note({
   content: "HTML is easy",
   important: true,
 });
 
 note.save().then((result) => {
   console.log("note saved!");
+  mongoose.connection.close();
+}); */
+
+// Obtener todas las notas
+/* Note.find({}).then((result) => {
+  result.forEach((note) => {
+    console.log(note);
+  });
+  mongoose.connection.close();
+}); */
+
+// Obtener solo notas impotantes
+Note.find({ important: true }).then((result) => {
+  result.forEach((note) => {
+    console.log(note);
+  });
   mongoose.connection.close();
 });
