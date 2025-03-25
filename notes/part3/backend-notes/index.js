@@ -1,11 +1,13 @@
 const express = require("express");
-const app = express();
 const cors = require("cors");
+const mongoose = require("mongoose");
+require("dotenv").config(); // Load environment variables from the .env file into process.env
+
+const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use(express.static("dist")); // Siempre que Express recibe una solicitud HTTP GET, primero verificará si el directorio dist contiene un archivo correspondiente a la dirección de la solicitud. Si se encuentra un archivo correcto, Express lo devolverá.
-/* Los middleware son funciones que se pueden utilizar para manejar objetos de request y response. */
+app.use(express.static("dist"));
 
 const requestLogger = (request, response, next) => {
   console.log("Method:", request.method);
@@ -15,9 +17,18 @@ const requestLogger = (request, response, next) => {
   next();
 };
 
-/* Recuerda, las funciones middleware se llaman en el orden en el que son encontradas por el motor de JavaScript. Ten en cuenta que json-parser se encuentra definido antes que requestLogger, porque de lo contrario, ¡request.body no se inicializará cuando se ejecute el logger! */
-
 app.use(requestLogger);
+
+const url = process.env.MONGODB_URI;
+mongoose.set("strictQuery", false);
+mongoose.connect(url);
+
+const noteSchema = new mongoose.Schema({
+  content: String,
+  important: Boolean,
+});
+
+const Note = mongoose.model("Note", noteSchema);
 
 let notes = [
   {
@@ -38,11 +49,13 @@ let notes = [
 ];
 
 app.get("/", (request, response) => {
-  response.send("<h1>Hello World!</h1>"); // Establece automáticamente la cabecera "Content-Type text/html"
+  response.send("<h1>Hello World!</h1>");
 });
 
 app.get("/api/notes", (request, response) => {
-  response.json(notes); // Establece automáticamente la cabecera "Content-Type application/json"
+  Note.find({}).then((notes) => {
+    response.json(notes);
+  });
 });
 
 // Obtener una sola nota a partir de su id
