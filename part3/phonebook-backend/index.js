@@ -1,8 +1,5 @@
-require("dotenv").config();
-
 const express = require("express");
 const morgan = require("morgan");
-const mongoose = require("mongoose");
 const Person = require("./models/person");
 
 const app = express();
@@ -16,25 +13,6 @@ morgan.token("body", (req) => JSON.stringify(req.body));
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
-
-let persons = [];
-
-// Connect database
-const url = process.env.MONGODB_URI;
-console.log("connecting to", url);
-mongoose
-  .connect(url)
-  .then((result) => {
-    console.log("connected to MongoDB");
-  })
-  .catch((error) => {
-    console.log("error connecting to MongoDB:", error.message);
-  });
-
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-});
 
 app.get("/", (request, response) => {
   response.send("<h1>Phonebook Backend</h1><h2>Iria Vidal</h2>");
