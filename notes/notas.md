@@ -107,3 +107,69 @@ Esto permite que el frontend en `localhost:5173/` pueda comunicarse con el backe
 
 ![Configuración render 1](./assets/render1.jpg)
 ![Configuración render 2](./assets/render2.jpg)
+
+## mongoose.set("strictQuery", false);
+
+Esta línea de código en Mongoose desactiva el **modo de consulta estricta** (strictQuery).
+
+### ¿Qué es `strictQuery` en Mongoose?
+
+Mongoose permite realizar consultas en la base de datos utilizando objetos con diferentes propiedades. Sin embargo, cuando `strictQuery` está habilitado (`true`), Mongoose solo permite consultar utilizando propiedades que estén definidas en el esquema.
+
+Si se establece en `false`, Mongoose permite realizar consultas con propiedades que no están definidas en el esquema, aunque la base de datos puede no devolver resultados.
+
+#### Ejemplo con `strictQuery: true` (Modo Estricto)
+
+Supongamos que tenemos un esquema en Mongoose para una colección de usuarios:
+
+```
+const userSchema = new mongoose.Schema({
+  name: String,
+  age: Number
+});
+
+const User = mongoose.model("User", userSchema);
+```
+
+Si intentamos hacer una consulta con una propiedad no definida en el esquema:
+
+```
+User.find({ email: "test@example.com" })
+  .then(result => console.log(result))
+  .catch(error => console.error(error));
+```
+
+Con strictQuery activado (true), Mongoose ignorará la propiedad email porque no está definida en el esquema, y la consulta se traducirá a:
+
+```
+User.find({})  // Devuelve todos los usuarios
+```
+
+Lo que significa que la consulta no filtrará nada y devolverá todos los documentos en la colección.
+
+#### Ejemplo con `strictQuery: false` (Modo Flexible)
+
+Si en cambio desactivamos `strictQuery` con:
+
+```
+mongoose.set("strictQuery", false);
+```
+
+Mongoose **no ignorará** la consulta con `email`, sino que la enviará a MongoDB tal como está:
+
+```
+User.find({ email: "test@example.com" })
+```
+
+En este caso, MongoDB intentará buscar documentos que tengan la propiedad `email`. Si bien en la mayoría de los casos no devolverá resultados (porque `email` no está en el esquema), en algunos casos puede funcionar si en la base de datos ya existen documentos que tienen esta propiedad de alguna manera.
+
+## ¿Qué es un esquema en Mongoose?
+
+Un **esquema** en Mongoose es una estructura que define la forma que tendrán los documentos dentro de una colección de MongoDB. Es como un "molde" o "plantilla" que indica qué propiedades tendrá cada documento, qué tipo de datos pueden almacenar y si deben cumplir ciertas reglas o restricciones. Ejemplo:
+
+```
+const noteSchema = new mongoose.Schema({
+  content: String,
+  important: Boolean,
+});
+```
