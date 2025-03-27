@@ -30,23 +30,18 @@ const noteSchema = new mongoose.Schema({
 
 const Note = mongoose.model("Note", noteSchema);
 
-let notes = [
-  {
-    id: 1,
-    content: "HTML is easy",
-    important: true,
+noteSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    // Convierte el campo _id de MongoDB en una cadena y lo asigna a 'id'
+    returnedObject.id = returnedObject._id.toString();
+
+    // Elimina el campo _id para evitar redundancia, ya que ahora 'id' contiene el mismo valor
+    delete returnedObject._id;
+
+    // Elimina el campo __v, que es una propiedad interna de Mongoose utilizada para el control de versiones
+    delete returnedObject.__v;
   },
-  {
-    id: 2,
-    content: "Browser can execute only JavaScript",
-    important: false,
-  },
-  {
-    id: 3,
-    content: "GET and POST are the most important methods of HTTP protocol",
-    important: true,
-  },
-];
+});
 
 app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
