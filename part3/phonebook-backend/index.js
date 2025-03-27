@@ -52,48 +52,17 @@ app.get("/api/persons/:id", (request, response) => {
   response.status(204).end();
 }); */
 
-/* const generateId = () => {
-  return Math.floor(Math.random() * 1000000);
-};
-
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: "name or number missing",
-    });
-  }
-
-  const index = persons.findIndex((person) => person.name === body.name);
-  if (index !== -1) {
-    return response.status(400).json({
-      error: "name must be unique",
-    });
-  }
-
-  const person = {
-    name: body.name,
-    number: body.number,
-    id: generateId(),
-  };
-
-  persons = persons.concat(person);
-
-  response.json(person);
-}); */
-
-app.post("/api/persons", (request, response) => {
-  const body = request.body;
-
-  if (body.content === undefined) {
+  if (body.name === undefined || body.number === undefined) {
     return response.status(400).json({ error: "content missing" });
   }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-  };
+  });
 
   person.save().then((savedPerson) => {
     response.json(savedPerson);
