@@ -1,4 +1,5 @@
-require("dotenv").config(); // Importante que esté de primero para poder acceder a .env
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const Note = require("./models/note");
@@ -20,14 +21,9 @@ const requestLogger = (request, response, next) => {
 
 app.use(requestLogger);
 
-/* const url = process.env.MONGODB_URI;
-mongoose.set("strictQuery", false);
-mongoose.connect(url); */
-
+// Conectar a la base de datos
 const url = process.env.MONGODB_URI;
-
 console.log("connecting to", url);
-
 mongoose
   .connect(url)
   .then((result) => {
@@ -42,21 +38,6 @@ const noteSchema = new mongoose.Schema({
   important: Boolean,
 });
 
-/* const Note = mongoose.model("Note", noteSchema);
-
-noteSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
-    // Convierte el campo _id de MongoDB en una cadena y lo asigna a 'id'
-    returnedObject.id = returnedObject._id.toString();
-
-    // Elimina el campo _id para evitar redundancia, ya que ahora 'id' contiene el mismo valor
-    delete returnedObject._id;
-
-    // Elimina el campo __v, que es una propiedad interna de Mongoose utilizada para el control de versiones
-    delete returnedObject.__v;
-  },
-}); */
-
 app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
 });
@@ -68,7 +49,7 @@ app.get("/api/notes", (request, response) => {
 });
 
 // Obtener una sola nota a partir de su id
-app.get("/api/notes/:id", (request, response) => {
+/* app.get("/api/notes/:id", (request, response) => {
   const id = Number(request.params.id);
   const note = notes.find((note) => note.id === id);
 
@@ -77,6 +58,11 @@ app.get("/api/notes/:id", (request, response) => {
   } else {
     response.status(404).end();
   }
+}); */
+app.get("/api/notes/:id", (request, response) => {
+  Note.findById(request.params.id).then((note) => {
+    response.json(note);
+  });
 });
 
 // Eliminar una nota a partir de su id
@@ -88,7 +74,7 @@ app.delete("/api/notes/:id", (request, response) => {
 });
 
 // Agregar una nota
-const generateId = () => {
+/* const generateId = () => {
   const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
   return maxId + 1;
 };
@@ -111,6 +97,22 @@ app.post("/api/notes", (request, response) => {
   notes = notes.concat(note);
 
   response.json(note);
+}); */
+app.post("/api/notes", (request, response) => {
+  const body = request.body;
+
+  if (body.content === undefined) {
+    return response.status(400).json({ error: "content missing" });
+  }
+
+  const note = new Note({
+    content: body.content,
+    important: body.important || false,
+  });
+
+  note.save().then((savedNote) => {
+    response.json(savedNote);
+  });
 });
 
 const unknownEndpoint = (request, response) => {
