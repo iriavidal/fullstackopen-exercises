@@ -18,18 +18,21 @@ app.get("/", (request, response) => {
   response.send("<h1>Phonebook Backend</h1><h2>Iria Vidal</h2>");
 });
 
-/* app.get("/info", (request, response) => {
+app.get("/info", (request, response) => {
   const now = new Date();
 
-  response.send(`
-        <p>Phonebook has info for ${persons.length} people</p>
+  Person.countDocuments()
+    .then((count) => {
+      response.send(`
+        <p>Phonebook has info for ${count} people</p>
         <p>${now}</p>
         `);
-}); */
+    })
+    .catch((error) => next(error));
+});
 
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((people) => {
-    console.log("hola");
     response.json(people);
   });
 });
