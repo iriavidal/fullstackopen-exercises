@@ -61,14 +61,33 @@ app.post("/api/persons", (request, response) => {
     return response.status(400).json({ error: "content missing" });
   }
 
-  const person = new Person({
-    name: body.name,
-    number: body.number,
-  });
+  Person.findOne({ name: body.name })
+    .then((existingPerson) => {
+      if (existingPerson) {
+        response.redirect(`/api/persons/${existingPerson._id}`);
+      } else {
+        const person = new Person({
+          name: body.name,
+          number: body.number,
+        });
+        return person.save().then((savedPerson) => response.json(savedPerson));
+      }
+    })
+    .catch((error) => next(error));
+});
 
-  person.save().then((savedPerson) => {
-    response.json(savedPerson);
-  });
+app.put("/api/persons/:id", (request, response, next) => {
+  const body = request.body;
+
+  const person = {
+    number: body.number,
+  };
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
+    })
+    .catch((error) => next(error));
 });
 
 const unknownEndpoint = (request, response) => {
