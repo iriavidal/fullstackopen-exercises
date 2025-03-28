@@ -52,9 +52,19 @@ app.get("/api/notes", (request, response) => {
 
 // 📌 Obtener una nota por ID
 app.get("/api/notes/:id", (request, response) => {
-  Note.findById(request.params.id).then((note) => {
-    response.json(note);
-  });
+  Note.findById(request.params.id)
+    .then((note) => {
+      if (note) {
+        response.json(note);
+      } else {
+        response.status(404).end(); // not found
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      // response.status(500).end(); // internal server error
+      response.status(400).send({ error: "malformatted id" });
+    });
 });
 
 // 📌 Agregar una nueva nota
