@@ -51,20 +51,17 @@ app.get("/api/notes", (request, response) => {
 });
 
 // 📌 Obtener una nota por ID
-app.get("/api/notes/:id", (request, response) => {
+app.get("/api/notes/:id", (request, response, next) => {
   Note.findById(request.params.id)
     .then((note) => {
       if (note) {
         response.json(note);
       } else {
-        response.status(404).end(); // not found
+        response.status(404).end();
       }
     })
-    .catch((error) => {
-      console.log(error);
-      // response.status(500).end(); // internal server error
-      response.status(400).send({ error: "malformatted id" });
-    });
+
+    .catch((error) => next(error));
 });
 
 // 📌 Agregar una nueva nota
@@ -94,12 +91,25 @@ app.post("/api/notes", (request, response) => {
 }); */
 
 // 📌 5. MANEJO DE ERRORES
-// Middleware para manejar rutas desconocidas (errores 404)
+/* // Middleware para manejar rutas desconocidas (errores 404)
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
 
-app.use(unknownEndpoint); // Aplica el middleware a todas las solicitudes que no coincidan con una ruta
+app.use(unknownEndpoint); // Aplica el middleware a todas las solicitudes que no coincidan con una ruta */
+
+// Middleware para manejar errores
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler); // Éste debe ser el último middleware cargado, ¡también todas las rutas deben ser registrada antes que esto!
 
 // 📌 6. INICIAR EL SERVIDOR
 // Define el puerto en el que el servidor escuchará las peticiones
