@@ -83,12 +83,32 @@ app.post("/api/notes", (request, response) => {
 });
 
 // 📌 Eliminar una nota
-/* app.delete("/api/notes/:id", (request, response) => {
-  const id = Number(request.params.id);
-  notes = notes.filter((note) => note.id !== id);
+app.delete("/api/notes/:id", (request, response, next) => {
+  Note.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
+});
 
-  response.status(204).end();
-}); */
+// 📌 Modificar una nota
+app.put("/api/notes/:id", (request, response, next) => {
+  const body = request.body;
+
+  const note = {
+    content: body.content,
+    important: body.important,
+  };
+
+  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then((updatedNote) => {
+      response.json(updatedNote);
+    })
+    .catch((error) => next(error));
+
+  /* El método findByIdAndUpdate recibe un objeto JavaScript normal como argumento, y no un nuevo objeto de nota creado con la función constructora Note. */
+  /* De forma predeterminada, el parámetro updatedNote del controlador de eventos recibe el documento original sin las modificaciones. Agregamos el parámetro opcional { new: true }, que hará que nuestro controlador de eventos sea llamado con el nuevo documento modificado en lugar del original. */
+});
 
 // 📌 5. MANEJO DE ERRORES
 // Middleware para manejar rutas desconocidas (errores 404)
