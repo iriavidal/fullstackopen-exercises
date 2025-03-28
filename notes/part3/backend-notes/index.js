@@ -91,12 +91,12 @@ app.post("/api/notes", (request, response) => {
 }); */
 
 // 📌 5. MANEJO DE ERRORES
-/* // Middleware para manejar rutas desconocidas (errores 404)
+// Middleware para manejar rutas desconocidas (errores 404)
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
 
-app.use(unknownEndpoint); // Aplica el middleware a todas las solicitudes que no coincidan con una ruta */
+app.use(unknownEndpoint); // Aplica el middleware a todas las solicitudes que no coincidan con una ruta
 
 // Middleware para manejar errores
 const errorHandler = (error, request, response, next) => {
