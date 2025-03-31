@@ -18,9 +18,15 @@ mongoose
 
 // Define un esquema de Mongoose para las notas, especificando que cada nota tendrá un campo "content" de tipo String y un campo "important" de tipo Boolean
 const noteSchema = new mongoose.Schema({
-  content: String,
+  content: {
+    type: String,
+    minLength: 5,
+    required: true,
+  },
   important: Boolean,
 });
+/* El campo content ahora requiere tener al menos cinco caracteres de longitud y esta definido como required, lo que significa que no puede faltar. */
+/* Los validadores minlength y required están integrados y proporcionados por Mongoose. La funcionalidad del validador personalizado de Mongoose nos permite crear nuevos validadores, si ninguno de los integrados cubre nuestras necesidades. */
 
 noteSchema.set("toJSON", {
   // Esta configuración personaliza cómo se transforma un documento de MongoDB cuando se convierte a JSON

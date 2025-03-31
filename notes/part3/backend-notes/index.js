@@ -65,21 +65,21 @@ app.get("/api/notes/:id", (request, response, next) => {
 });
 
 // 📌 Agregar una nueva nota
-app.post("/api/notes", (request, response) => {
+app.post("/api/notes", (request, response, next) => {
   const body = request.body;
-
-  if (body.content === undefined) {
-    return response.status(400).json({ error: "content missing" });
-  }
 
   const note = new Note({
     content: body.content,
     important: body.important || false,
   });
 
-  note.save().then((savedNote) => {
-    response.json(savedNote);
-  });
+  note
+    .save()
+    .then((savedNote) => {
+      response.json(savedNote);
+    })
+
+    .catch((error) => next(error));
 });
 
 // 📌 Eliminar una nota
@@ -100,14 +100,18 @@ app.put("/api/notes/:id", (request, response, next) => {
     important: body.important,
   };
 
-  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+  Note.findByIdAndUpdate(
+    request.params.id,
+    { content, important },
+    { new: true, runValidators: true, context: "query" } // Configura la actualización:
+    // - 'new: true' devuelve el documento actualizado en lugar del original
+    // - 'runValidators: true' aplica las validaciones del esquema de Mongoose
+    // - 'context: "query"' asegura que las validaciones funcionen correctamente en la consulta
+  )
     .then((updatedNote) => {
       response.json(updatedNote);
     })
     .catch((error) => next(error));
-
-  /* El método findByIdAndUpdate recibe un objeto JavaScript normal como argumento, y no un nuevo objeto de nota creado con la función constructora Note. */
-  /* De forma predeterminada, el parámetro updatedNote del controlador de eventos recibe el documento original sin las modificaciones. Agregamos el parámetro opcional { new: true }, que hará que nuestro controlador de eventos sea llamado con el nuevo documento modificado en lugar del original. */
 });
 
 // 📌 5. MANEJO DE ERRORES
@@ -124,6 +128,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
