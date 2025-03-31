@@ -173,3 +173,7 @@ const noteSchema = new mongoose.Schema({
   important: Boolean,
 });
 ```
+
+## Cómo añadir las variables del archivo .env en Render
+
+![Configuración variables de entorno en Render](./assets/env-render.jpg)
