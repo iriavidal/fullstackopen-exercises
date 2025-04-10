@@ -143,10 +143,10 @@ const App = () => {
         setNewPhone("");
       })
       .catch((error) => {
-        console.log("Error:", error);
+        console.log("Error:", error.response.data.error);
 
         setError(true);
-        setNotification(`${error}`);
+        setNotification(`${error.response.data.error}`);
         setTimeout(() => setNotification(null), 3000);
       });
   };
