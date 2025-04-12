@@ -132,14 +132,23 @@ const App = () => {
     }
 
     const personObject = { name: newName, number: newPhone };
-    personService.create(personObject).then((returnedPerson) => {
-      setPersons(persons.concat(returnedPerson));
-      setError(false);
-      setNotification(`Added ${newName} to the phonebook`);
-      setTimeout(() => setNotification(null), 3000);
-      setNewName("");
-      setNewPhone("");
-    });
+    personService
+      .create(personObject)
+      .then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setError(false);
+        setNotification(`Added ${newName} to the phonebook`);
+        setTimeout(() => setNotification(null), 3000);
+        setNewName("");
+        setNewPhone("");
+      })
+      .catch((error) => {
+        console.log("Error:", error.response.data.error);
+
+        setError(true);
+        setNotification(`${error.response.data.error}`);
+        setTimeout(() => setNotification(null), 3000);
+      });
   };
 
   const handlePersonChange = (e) => setNewName(e.target.value);
