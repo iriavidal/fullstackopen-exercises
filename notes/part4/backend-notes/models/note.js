@@ -1,41 +1,28 @@
-const mongoose = require("mongoose"); // Importa la biblioteca Mongoose para interactuar con MongoDB
+// Importamos Mongoose, una biblioteca que facilita la interacción con bases de datos MongoDB
+const mongoose = require("mongoose");
 
-mongoose.set("strictQuery", false); // Desactiva el modo "strictQuery" en Mongoose, lo que permite realizar consultas sin necesidad de definir previamente las propiedades en el esquema
-
-const url = process.env.MONGODB_URI; // Obtiene la URL de conexión a MongoDB desde las variables de entorno
-
-console.log("connecting to", url);
-
-mongoose
-  .connect(url) // Intenta establecer una conexión con MongoDB usando la URL proporcionada
-
-  .then((result) => {
-    console.log("connected to MongoDB");
-  })
-  .catch((error) => {
-    console.log("error connecting to MongoDB:", error.message);
-  });
-
-// Define un esquema de Mongoose para las notas, especificando que cada nota tendrá un campo "content" de tipo String y un campo "important" de tipo Boolean
+// Definimos el esquema de una "nota", que indica cómo se guardará en la base de datos
 const noteSchema = new mongoose.Schema({
   content: {
-    type: String,
-    minLength: 5,
-    required: true,
+    type: String, // El contenido de la nota debe ser una cadena de texto
+    required: true, // Este campo es obligatorio
+    minlength: 5, // El contenido debe tener al menos 5 caracteres
   },
-  important: Boolean,
+  important: Boolean, // Campo opcional que indica si la nota es importante o no
 });
-/* El campo content ahora requiere tener al menos cinco caracteres de longitud y esta definido como required, lo que significa que no puede faltar. */
-/* Los validadores minlength y required están integrados y proporcionados por Mongoose. La funcionalidad del validador personalizado de Mongoose nos permite crear nuevos validadores, si ninguno de los integrados cubre nuestras necesidades. */
 
+// Modificamos cómo se convierte una nota a JSON (por ejemplo, al enviarla al frontend)
 noteSchema.set("toJSON", {
-  // Esta configuración personaliza cómo se transforma un documento de MongoDB cuando se convierte a JSON
   transform: (document, returnedObject) => {
+    // Reemplazamos _id (que es el identificador de MongoDB) por id en formato string
     returnedObject.id = returnedObject._id.toString();
+    // Eliminamos _id para que no se duplique con id
     delete returnedObject._id;
+    // Eliminamos __v (campo interno de Mongoose que indica la versión del documento)
     delete returnedObject.__v;
   },
 });
 
-// Crea un modelo de Mongoose basado en el esquema definido y lo exporta para ser usado en otros archivos del proyecto
+// Exportamos el modelo para que pueda usarse en otros archivos
+// Este modelo se basa en el esquema definido y se llamará 'Note' en la base de datos
 module.exports = mongoose.model("Note", noteSchema);
