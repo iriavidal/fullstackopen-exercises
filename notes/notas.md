@@ -368,3 +368,91 @@ console.log(likesPerAuthor);
   { author: "Bob", totalLikes: 17 },
 ];
 ```
+
+## Entorno de prueba
+
+### ¿Qué es el entorno de prueba y para qué sirve?
+
+Cuando creamos una aplicación con Node.js, esta puede comportarse de forma diferente según el entorno en el que se esté ejecutando:
+
+. **Producción:** Cuando la app está en un servidor real (por ejemplo, en Fly.io o Render).
+
+- **Desarrollo:** Cuando estás programando en tu ordenador.
+
+- **Pruebas:** Cuando ejecutas tests para comprobar que tu código funciona correctamente.
+
+### ¿Cómo se cambia el entorno?
+
+Node.js permite establecer una variable llamada `NODE_ENV` que indica en qué modo está la app. Podemos usarla para que el código haga cosas diferentes dependiendo del entorno.
+
+Por ejemplo, podemos usar diferentes bases de datos:
+
+- Una para desarrollo.
+
+- Otra para producción.
+
+- Otra distinta para hacer pruebas, sin dañar los datos reales.
+
+### ¿Dónde se pone NODE_ENV?
+
+Lo más habitual es definirlo en los scripts del archivo `package.json`:
+
+```json
+"scripts": {
+  "start": "NODE_ENV=production node index.js",
+  "dev": "NODE_ENV=development nodemon index.js",
+  "test": "NODE_ENV=test node --test"
+}
+```
+
+Esto significa:
+
+- `npm start`: ejecuta la app en modo **producción**.
+
+- `npm run dev`: ejecuta la app en modo **desarrollo** con recarga automática.
+
+- `npm test`: ejecuta los tests en modo **test**.
+
+### ¿Cuál es el problema en Windows?
+
+Los scripts como `"NODE_ENV=production node index.js"` funcionan bien en **Linux y Mac**, pero en **Windows fallan** porque el sistema no entiende esa sintaxis.
+
+### ¿Cuál es la solución?
+
+Instalar un paquete que se llama `cross-env`, que hace que esto funcione igual en todos los sistemas operativos (Windows, Mac y Linux).
+
+1. Para desarrollo:
+
+```bash
+npm install --save-dev cross-env
+```
+
+2. Si quieres que también funcione al subirlo a producción (por ejemplo en Fly.io), instálalo así:
+
+```bash
+npm install cross-env
+```
+
+### Actualizar los scripts con cross-env
+
+Cambia tus scripts en `package.json` para usar `cross-env`:
+
+```json
+"scripts": {
+  "start": "cross-env NODE_ENV=production node index.js",
+  "dev": "cross-env NODE_ENV=development nodemon index.js",
+  "test": "cross-env NODE_ENV=test node --test"
+}
+```
+
+Ahora funciona igual en **todos los sistemas**.
+
+### ¿Por qué es útil todo esto?
+
+Porque nos permite tener comportamientos distintos según el entorno. Por ejemplo:
+
+- Cargar **datos reales** en producción.
+
+- Usar una **base de datos** de pruebas al ejecutar `npm test`.
+
+- Usar datos falsos o mostrar logs más detallados en desarrollo.

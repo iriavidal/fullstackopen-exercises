@@ -2,10 +2,15 @@
 require("dotenv").config();
 
 // Obtiene el valor de la variable de entorno PORT (puerto en el que se ejecutará el servidor)
-let PORT = process.env.PORT;
+const PORT = process.env.PORT;
 
-// Obtiene el valor de la variable de entorno MONGODB_URI (cadena de conexión a MongoDB)
-let MONGODB_URI = process.env.MONGODB_URI;
+// Selecciona la URI de la base de datos según el entorno:
+// - Si NODE_ENV es "test", usa TEST_MONGODB_URI (base de datos para pruebas)
+// - En cualquier otro caso, usa MONGODB_URI (base de datos principal)
+const MONGODB_URI =
+  process.env.NODE_ENV === "test"
+    ? process.env.TEST_MONGODB_URI
+    : process.env.MONGODB_URI;
 
 // Exporta las variables como un objeto para poder usarlas en otras partes del proyecto
 module.exports = {

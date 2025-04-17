@@ -7,11 +7,11 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "test": "cross-env  NODE_ENV=test node --test",
     "build:ui": "rm -rf dist && cd ../notes && npm run build && cp -r dist ../backend-notes",
-    "deploy:full": "npm run build:ui && git add . && git commit -m 'UI updated and built' && git push",
-    "test": "node --test"
+    "deploy:full": "npm run build:ui && git add . && git commit -m 'UI updated and built' && git push"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -20,6 +20,7 @@
     "mongoose": "^8.13.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nodemon": "^3.1.9"
   }
 }
