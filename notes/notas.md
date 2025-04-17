@@ -200,3 +200,171 @@ npm install lodash
 ```js
 const _ = require("lodash");
 ```
+
+### 1. Agrupar elementos (`_.groupBy`)
+
+```js
+const _ = require("lodash");
+
+const users = [
+  { name: "Alice", role: "admin" },
+  { name: "Bob", role: "user" },
+  { name: "Charlie", role: "admin" },
+  { name: "David", role: "user" },
+];
+
+const grouped = _.groupBy(users, "role");
+
+console.log(grouped);
+```
+
+**Explicación:**
+
+- `_.groupBy` agrupa los elementos del array por el valor de una propiedad.
+
+- En este caso, agrupa por role, así que obtendrás:
+
+```js
+{
+  admin: [
+    { name: 'Alice', role: 'admin' },
+    { name: 'Charlie', role: 'admin' }
+  ],
+  user: [
+    { name: 'Bob', role: 'user' },
+    { name: 'David', role: 'user' }
+  ]
+}
+```
+
+### 2. Ordenar (`_.sortBy`)
+
+```js
+const items = [
+  { name: "Apple", price: 3 },
+  { name: "Banana", price: 1 },
+  { name: "Orange", price: 2 },
+];
+
+const sorted = _.sortBy(items, "price");
+
+console.log(sorted);
+```
+
+**Explicación:**
+
+- `_.sortBy` ordena los objetos del array por la propiedad indicada (price).
+
+- Devuelve un nuevo array ordenado de menor a mayor:
+
+```js
+[
+  { name: "Banana", price: 1 },
+  { name: "Orange", price: 2 },
+  { name: "Apple", price: 3 },
+];
+```
+
+### 3. Buscar máximos/mínimos (_.maxBy, _.minBy)
+
+```js
+const products = [
+  { name: "Laptop", price: 1200 },
+  { name: "Phone", price: 800 },
+  { name: "Tablet", price: 600 },
+];
+
+const mostExpensive = _.maxBy(products, "price");
+const cheapest = _.minBy(products, "price");
+
+console.log(mostExpensive); // Laptop
+console.log(cheapest); // Tablet
+```
+
+**Explicación:**
+
+- `_.maxBy` devuelve el objeto con el valor máximo en la propiedad especificada.
+
+- `_.minBy` hace lo mismo pero con el valor mínimo.
+
+### 4. Filtrar y mapear
+
+```js
+const books = [
+  { title: "Book A", year: 1999 },
+  { title: "Book B", year: 2010 },
+  { title: "Book C", year: 2020 },
+];
+
+// Filtrar libros publicados después de 2000
+const recentBooks = _.filter(books, (book) => book.year > 2000);
+
+// Obtener solo los títulos
+const titles = _.map(recentBooks, "title");
+
+console.log(titles); // ['Book B', 'Book C']
+```
+
+**Explicación:**
+
+- `_.filter` devuelve los objetos que cumplen una condición.
+
+- `_.map` transforma cada objeto, extrayendo una propiedad o aplicando una función.
+
+### 5. Clonar y comparar objetos
+
+```js
+const original = { name: "Anna", age: 25 };
+
+// Clonar objeto
+const clone = _.cloneDeep(original);
+
+// Comparar si tienen el mismo contenido
+console.log(_.isEqual(original, clone)); // true
+
+// Comparar referencias
+console.log(original === clone); // false (porque son objetos distintos)
+```
+
+**Explicación:**
+
+- `_.cloneDeep` crea una copia profunda del objeto.
+
+- `_.isEqual` compara dos objetos para ver si su contenido es idéntico.
+
+### 6. Operaciones complejas con arrays de objetos
+
+```js
+const posts = [
+  { author: "Alice", likes: 5 },
+  { author: "Bob", likes: 10 },
+  { author: "Alice", likes: 3 },
+  { author: "Bob", likes: 7 },
+];
+
+// Total likes por autor
+const grouped = _.groupBy(posts, "author");
+const likesPerAuthor = _.map(grouped, (posts, author) => {
+  return {
+    author,
+    totalLikes: _.sumBy(posts, "likes"),
+  };
+});
+
+console.log(likesPerAuthor);
+```
+
+**Explicación:**
+
+1. Agrupamos los posts por author con `_.groupBy`.
+
+2. Luego, para cada grupo, usamos `_.sumBy` para sumar los likes.
+
+3. El resultado será un array con los autores y el total de likes de cada uno:
+
+```js
+[
+  { author: "Alice", totalLikes: 8 },
+  { author: "Bob", totalLikes: 17 },
+];
+```
