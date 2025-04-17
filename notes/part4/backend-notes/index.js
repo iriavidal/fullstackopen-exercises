@@ -12,3 +12,9 @@ app.listen(config.PORT, () => {
   // Muestra en consola que el servidor se ha iniciado correctamente y en qué puerto está escuchando
   logger.info(`Server running on port ${config.PORT}`);
 });
+
+/* EXPLICACIÓN DEL ARCHIVO:
+- Responsabilidad: punto de entrada del servidor.
+- Qué hace: importa app desde app.js, y pone a escuchar el servidor en el puerto definido en las variables de entorno.
+- Conexión: usa config.js para leer el puerto y logger.js para mostrar logs.
+*/

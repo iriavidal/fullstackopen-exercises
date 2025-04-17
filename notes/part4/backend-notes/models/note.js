@@ -26,3 +26,10 @@ noteSchema.set("toJSON", {
 // Exportamos el modelo para que pueda usarse en otros archivos
 // Este modelo se basa en el esquema definido y se llamará 'Note' en la base de datos
 module.exports = mongoose.model("Note", noteSchema);
+
+/* EXPLICACIÓN DEL ARCHIVO:
+- Responsabilidad: define el esquema de datos de una nota.
+- Qué hace: 
+  - usa mongoose para declarar la estructura
+  - exporta el modelo Note para usar en los controladores  
+*/

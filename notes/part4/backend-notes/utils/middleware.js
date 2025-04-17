@@ -46,3 +46,11 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
 };
+
+/* EXPLICACIÓN DEL ARCHIVO:
+- Responsabilidad: middleware personalizado.
+- Qué hace: 
+  - requestLogger: logea cada petición
+  - unknownEndpoint: responde con 404 si no encuentra la ruta
+  - errorHandler: maneja errores comunes de forma centralizada
+*/

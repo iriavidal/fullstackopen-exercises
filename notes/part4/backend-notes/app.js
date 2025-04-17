@@ -63,3 +63,15 @@ app.use(middleware.errorHandler);
 
 // Exporta la app configurada para que pueda ser utilizada en el archivo que lanza el servidor (por ejemplo, index.js)
 module.exports = app;
+
+/* EXPLICACIÓN DEL ARCHIVO:
+- Responsabilidad: configura y crea la aplicación express.
+- Qué hace: 
+  - se conecta a mongodb
+  - usa middleware como logger, error handler, etc.
+  - define rutas (/api/notes)
+- Conexión: 
+  - usa config.js para la uri de mongodb
+  - usa middleware.js para logging y errores
+  - usa notesRouter para manejar las rutas
+*/

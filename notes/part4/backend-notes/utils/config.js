@@ -12,3 +12,10 @@ module.exports = {
   MONGODB_URI,
   PORT,
 };
+
+/* EXPLICACIÓN DEL ARCHIVO:
+- Responsabilidad: manejar las variables de entorno.
+- Qué hace: 
+  - usa dotenv para cargar .env
+  - exporta PORT y MONGODB_URI para que otros archivos las usen
+*/

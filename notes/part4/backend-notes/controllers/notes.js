@@ -88,3 +88,8 @@ notesRouter.put("/:id", (request, response, next) => {
 
 // Exportamos el router para poder usarlo en otros archivos (por ejemplo, en app.js)
 module.exports = notesRouter;
+
+/* EXPLICACIÓN DEL ARCHIVO:
+- Responsabilidad: define las rutas específicas del blog.
+- Conexión: usa el modelo Note para interactuar con la base de datos.
+*/

@@ -15,3 +15,10 @@ module.exports = {
   info,
   error,
 };
+
+/* EXPLICACIÓN DEL ARCHIVO:
+- Responsabilidad: centraliza los mensajes de log.
+- Qué hace: 
+  - define funciones info y error para imprimir mensajes en consola
+  - se usa para seguimiento de errores y actividad del servidor
+*/
