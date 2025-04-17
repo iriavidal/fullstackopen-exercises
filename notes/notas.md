@@ -177,3 +177,26 @@ const noteSchema = new mongoose.Schema({
 ## Cómo añadir las variables del archivo .env en Render
 
 ![Configuración variables de entorno en Render](./assets/env-render.jpg)
+
+## ¿Qué es Lodash?
+
+**Lodash** es una librería de utilidades para JavaScript que facilita trabajar con arrays, objetos, strings, etc. Ayuda a escribir código más limpio y conciso, especialmente cuando se hacen cosas como:
+
+- Agrupar elementos (`_.groupBy`)
+- Ordenar (`_.sortBy`)
+- Buscar máximos/mínimos (`_.maxBy`, `_.minBy`)
+- Filtrar y mapear
+- Clonar y comparar objetos
+- Operaciones complejas con arrays de objetos
+
+👉 Se instala con:
+
+```bash
+npm install lodash
+```
+
+👉 Y se usa así:
+
+```js
+const _ = require("lodash");
+```
