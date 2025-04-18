@@ -456,3 +456,53 @@ Porque nos permite tener comportamientos distintos según el entorno. Por ejempl
 - Usar una **base de datos** de pruebas al ejecutar `npm test`.
 
 - Usar datos falsos o mostrar logs más detallados en desarrollo.
+
+## Ejecución de pruebas individualmente
+
+Por defecto, el comando:
+
+```bash
+npm test
+```
+
+ejecuta **todas las pruebas** de la aplicación. Sin embargo, durante el desarrollo es útil ejecutar solo una o algunas pruebas concretas.
+
+### Opción 1: `test.only`
+
+Puedes marcar pruebas individuales para que **solo se ejecuten ésas**:
+
+```js
+test.only("notes are returned as json", async () => {
+  // ...
+});
+
+test.only("there are two notes", async () => {
+  // ...
+});
+```
+
+Para que esto funcione, debes ejecutar el comando con la opción `--test-only`, **asegurándote de pasar dos guiones** (`--`):
+
+```bash
+npm run test -- -- --test-only
+```
+
+> ⚠️ ¡Cuidado! No olvides quitar `.only` al finalizar, o podrías dejar fuera pruebas importantes sin darte cuenta.
+
+### Opción 2: Ejecutar un archivo de pruebas específico
+
+Puedes correr solo un archivo de pruebas concreto, por ejemplo:
+
+```bash
+npm test -- tests/note_api.test.js
+```
+
+### Opción 3: Filtrar pruebas por nombre
+
+Si quieres ejecutar pruebas que contengan una palabra o frase específica en su nombre:
+
+```bash
+npm run test -- -- --test-name-pattern="notes"
+```
+
+También puedes usar partes del nombre, y funciona tanto con los títulos de `test()` como los de `describe()`.

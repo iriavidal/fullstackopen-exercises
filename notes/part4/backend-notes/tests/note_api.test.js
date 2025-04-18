@@ -1,5 +1,7 @@
 // Importa la función 'test' para definir pruebas, y 'after' para ejecutar algo después de todas las pruebas
-const { test, after } = require("node:test");
+const { test, after, beforeEach } = require("node:test");
+const Note = require("../models/note");
+const assert = require("node:assert");
 
 // Importa la librería Mongoose para conectarse y trabajar con MongoDB
 const mongoose = require("mongoose");
@@ -13,31 +15,45 @@ const app = require("../app");
 // Crea una instancia de supertest usando nuestra app, para poder hacer peticiones como si fuéramos un cliente
 const api = supertest(app);
 
+const initialNotes = [
+  {
+    content: "HTML is easy",
+    important: false,
+  },
+  {
+    content: "Browser can execute only JavaScript",
+    important: true,
+  },
+];
+
+beforeEach(async () => {
+  await Note.deleteMany({});
+  let noteObject = new Note(initialNotes[0]);
+  await noteObject.save();
+  noteObject = new Note(initialNotes[1]);
+  await noteObject.save();
+});
+
+/* La base de datos se borra al principio, y luego guardamos las dos notas almacenadas en el array initialNotes en la base de datos. Al hacer esto, nos aseguramos de que la base de datos esté en el mismo estado antes de ejecutar cada prueba. */
+
 // Define una prueba que verifica que el endpoint /api/notes devuelve datos en formato JSON
-test("notes are returned as json", async () => {
+test.only("notes are returned as json", async () => {
   await api
     .get("/api/notes") // Realiza una petición GET al endpoint /api/notes
     .expect(200) // Espera que la respuesta tenga un código de estado 200 (OK)
     .expect("Content-Type", /application\/json/); // Espera que el contenido sea del tipo JSON
 });
 
-test("there are two notes", async () => {
+test.only("there are two notes", async () => {
   const response = await api.get("/api/notes");
 
-  assert.strictEqual(response.body.length, 2);
+  assert.strictEqual(response.body.length, initialNotes.length);
 });
 
-/* test("the first note is about HTTP methods", async () => {
-  const response = await api.get("/api/notes");
-
-  const contents = response.body.map((e) => e.content);
-  assert.strictEqual(contents.includes("HTML is easy"), true);
-}); */
 test("the first note is about HTTP methods", async () => {
   const response = await api.get("/api/notes");
 
   const contents = response.body.map((e) => e.content);
-  // es el argumento truthy
   assert(contents.includes("HTML is easy"));
 });
 
