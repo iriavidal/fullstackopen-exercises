@@ -1,112 +1,93 @@
-// Importamos el módulo Router de Express para crear rutas separadas
+// Importamos el módulo Router de Express y lo guardamos en notesRouter
 const notesRouter = require("express").Router();
-
-// Importamos el modelo de Note (nota), que define cómo se guarda en la base de datos
+// Importamos el modelo Note para interactuar con la colección de notas en la base de datos
 const Note = require("../models/note");
 
 // Ruta GET para obtener todas las notas
-notesRouter.get("/", (request, response) => {
+notesRouter.get("/", async (request, response) => {
   // Buscamos todas las notas en la base de datos
-  Note.find({}).then((notes) => {
-    // Enviamos las notas como respuesta en formato JSON
-    response.json(notes);
-  });
+  const notes = await Note.find({});
+  // Respondemos con las notas encontradas en formato JSON
+  response.json(notes);
 });
 
-// Ruta GET para obtener una nota específica por su id
+// Ruta GET para obtener una nota específica por su ID
 notesRouter.get("/:id", (request, response, next) => {
-  // Buscamos la nota en la base de datos usando el id que llega por la URL
+  // Buscamos la nota por su ID usando el parámetro de la URL
   Note.findById(request.params.id)
     .then((note) => {
       if (note) {
-        // Si la nota existe, la enviamos como respuesta en formato JSON
+        // Si se encuentra la nota, se envía como respuesta en formato JSON
         response.json(note);
       } else {
-        // Si no se encuentra la nota, devolvemos un estado 404 (no encontrado)
+        // Si no se encuentra la nota, se responde con un estado 404 (no encontrado)
         response.status(404).end();
       }
     })
-    // Si hay un error (por ejemplo, id malformado), se pasa al middleware de errores
+    // Si ocurre un error (por ejemplo, ID mal formado), se pasa al middleware de manejo de errores
     .catch((error) => next(error));
 });
 
 // Ruta POST para crear una nueva nota
 notesRouter.post("/", (request, response, next) => {
-  // Obtenemos los datos enviados en el cuerpo de la solicitud
+  // Obtenemos el contenido enviado en el cuerpo de la petición
   const body = request.body;
 
-  // Creamos una nueva instancia del modelo Note
+  // Creamos una nueva instancia del modelo Note con el contenido y la importancia
   const note = new Note({
-    content: body.content, // El contenido de la nota
-    important: body.important || false, // Si es importante o no (por defecto false)
+    content: body.content,
+    important: body.important || false, // Si no se indica "important", se asume false
   });
 
-  // Guardamos la nota en la base de datos
+  // Guardamos la nueva nota en la base de datos
   note
     .save()
     .then((savedNote) => {
-      // Devolvemos la nota guardada como respuesta en formato JSON
+      // Respondemos con la nota guardada
       response.json(savedNote);
     })
-    // Si hay un error (por ejemplo, campos inválidos), lo pasamos al middleware de errores
+    // En caso de error (por ejemplo, validación), lo pasamos al middleware de errores
     .catch((error) => next(error));
 });
 
-// Ruta DELETE para eliminar una nota por su id
+// Ruta DELETE para eliminar una nota por su ID
 notesRouter.delete("/:id", (request, response, next) => {
-  // Buscamos y eliminamos la nota por su id
+  // Buscamos y eliminamos la nota correspondiente al ID recibido
   Note.findByIdAndDelete(request.params.id)
     .then(() => {
-      // Devolvemos un estado 204 (sin contenido) si la eliminación fue exitosa
+      // Respondemos con estado 204 (sin contenido) si la eliminación fue exitosa
       response.status(204).end();
     })
-    // Si hay un error (por ejemplo, id malformado), lo pasamos al middleware de errores
+    // En caso de error, lo pasamos al middleware de errores
     .catch((error) => next(error));
 });
 
-// Ruta PUT para actualizar una nota existente
+// Ruta PUT para actualizar una nota por su ID
 notesRouter.put("/:id", (request, response, next) => {
-  // Obtenemos los nuevos datos del cuerpo de la solicitud
+  // Obtenemos el contenido actualizado desde el cuerpo de la petición
   const body = request.body;
 
-  // Creamos un objeto con los datos actualizados
+  // Creamos un objeto con los nuevos datos que queremos guardar
   const note = {
-    content: body.content, // Nuevo contenido
-    important: body.important, // Nuevo estado de importancia
+    content: body.content,
+    important: body.important,
   };
 
-  // Buscamos la nota por id y la actualizamos con los nuevos datos
-  // La opción { new: true } hace que el método devuelva la nota actualizada
+  // Buscamos y actualizamos la nota, devolviendo la versión actualizada ({ new: true })
   Note.findByIdAndUpdate(request.params.id, note, { new: true })
     .then((updatedNote) => {
-      // Enviamos la nota actualizada como respuesta en formato JSON
+      // Respondemos con la nota actualizada
       response.json(updatedNote);
     })
-    // Si hay un error (por ejemplo, validación), lo pasamos al middleware de errores
+    // En caso de error, lo pasamos al middleware de errores
     .catch((error) => next(error));
 });
-
-// Ejemplo de función asíncrona
-const main = async () => {
-  const notes = await Note.find({});
-  console.log("operation returned the following notes", notes);
-
-  const noteToRemove = notes[0];
-
-  if (noteToRemove) {
-    await Note.deleteOne({ _id: noteToRemove._id });
-    console.log("The first note is removed");
-  } else {
-    console.log("No notes to remove");
-  }
-};
-
-main();
 
 // Exportamos el router para poder usarlo en otros archivos (por ejemplo, en app.js)
 module.exports = notesRouter;
 
-/* EXPLICACIÓN DEL ARCHIVO:
-- Responsabilidad: define las rutas específicas del blog.
-- Conexión: usa el modelo Note para interactuar con la base de datos.
+/*
+EXPLICACIÓN DEL ARCHIVO:
+- Responsabilidad: define las rutas específicas para operaciones CRUD sobre notas.
+- Conexión: usa el modelo Note para interactuar con la base de datos MongoDB a través de Mongoose.
 */
