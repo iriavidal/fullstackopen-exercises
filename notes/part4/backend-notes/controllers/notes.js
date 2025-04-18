@@ -86,6 +86,23 @@ notesRouter.put("/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
+// Ejemplo de función asíncrona
+const main = async () => {
+  const notes = await Note.find({});
+  console.log("operation returned the following notes", notes);
+
+  const noteToRemove = notes[0];
+
+  if (noteToRemove) {
+    await Note.deleteOne({ _id: noteToRemove._id });
+    console.log("The first note is removed");
+  } else {
+    console.log("No notes to remove");
+  }
+};
+
+main();
+
 // Exportamos el router para poder usarlo en otros archivos (por ejemplo, en app.js)
 module.exports = notesRouter;
 
