@@ -2,9 +2,19 @@
 
 ## Índice
 
-- [Por qué algunos elementos se guardan en estados y no en variables](#Por-que-algunos-elementos-se-guardan-en-estados-y-no-en-variables)
-
-- [Acerca de los tipos de solicitudes HTTP](#Acerca-de-los-tipos-de-solicitudes-HTTP)
+- [Por qué algunos elementos se guardan en estados y no en variables](#por-qué-algunos-elementos-se-guardan-en-estados-y-no-en-variables)
+- [Acerca de los tipos de solicitudes HTTP](#acerca-de-los-tipos-de-solicitudes-http)
+- [Política de mismo origen y CORS](#política-de-mismo-origen-y-cors)
+- [dashboard.render.com - Configuración](#dashboardrendercom)
+- [mongoose.set("strictQuery", false)](#mongoosesetstrictquery-false)
+- [Qué es un esquema en Mongoose](#qué-es-un-esquema-en-mongoose)
+- [Qué es Lodash](#qué-es-lodash)
+  - [1. Agrupar elementos \_.groupBy](#1-agrupar-elementos-_groupby)
+  - [2. Ordenar \_.sortBy](#2-ordenar-_sortby)
+  - [3. Buscar máximos o mínimos _.maxBy y _.minBy](#3-buscar-máximosmínimos-_maxby-_minby)
+  - [4. Filtrar y mapear](#4-filtrar-y-mapear)
+- [Entorno de pruebas](#entorno-de-prueba)
+- [Ejecución de pruebas individualmente](#ejecución-de-pruebas-individualmente)
 
 ## Por qué algunos elementos se guardan en estados y no en variables
 
@@ -163,7 +173,7 @@ User.find({ email: "test@example.com" })
 
 En este caso, MongoDB intentará buscar documentos que tengan la propiedad `email`. Si bien en la mayoría de los casos no devolverá resultados (porque `email` no está en el esquema), en algunos casos puede funcionar si en la base de datos ya existen documentos que tienen esta propiedad de alguna manera.
 
-## ¿Qué es un esquema en Mongoose?
+## Qué es un esquema en Mongoose
 
 Un **esquema** en Mongoose es una estructura que define la forma que tendrán los documentos dentro de una colección de MongoDB. Es como un "molde" o "plantilla" que indica qué propiedades tendrá cada documento, qué tipo de datos pueden almacenar y si deben cumplir ciertas reglas o restricciones. Ejemplo:
 
@@ -178,7 +188,7 @@ const noteSchema = new mongoose.Schema({
 
 ![Configuración variables de entorno en Render](./assets/env-render.jpg)
 
-## ¿Qué es Lodash?
+## Qué es Lodash
 
 **Lodash** es una librería de utilidades para JavaScript que facilita trabajar con arrays, objetos, strings, etc. Ayuda a escribir código más limpio y conciso, especialmente cuando se hacen cosas como:
 
