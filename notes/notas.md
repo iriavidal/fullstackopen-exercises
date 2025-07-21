@@ -2,6 +2,7 @@
 
 ## Índice
 
+- [Cómo crear e iniciar un proyecto en React](#cómo-crear-e-iniciar-un-proyecto-en-react)
 - [Por qué algunos elementos se guardan en estados y no en variables](#por-qué-algunos-elementos-se-guardan-en-estados-y-no-en-variables)
 - [Acerca de los tipos de solicitudes HTTP](#acerca-de-los-tipos-de-solicitudes-http)
 - [Política de mismo origen y CORS](#política-de-mismo-origen-y-cors)
@@ -15,6 +16,18 @@
   - [4. Filtrar y mapear](#4-filtrar-y-mapear)
 - [Entorno de pruebas](#entorno-de-prueba)
 - [Ejecución de pruebas individualmente](#ejecución-de-pruebas-individualmente)
+
+## Cómo crear e iniciar un proyecto en React
+
+> [Parte 1 -> a. Introducción a React](https://fullstackopen.com/es/part1/introduccion_a_react)
+
+```bash
+npm create vite@latest nombre-del-proyecto -- --template react
+
+cd nombre-del-proyecto
+npm install
+npm run dev
+```
 
 ## Por qué algunos elementos se guardan en estados y no en variables
 
