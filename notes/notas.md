@@ -228,6 +228,87 @@ const elemento = <h1 className="titulo">Hola Mundo</h1>;
   - Componentes clase: Necesitaban `bind` en constructores.
   - Componentes función (Hooks): ¡No usan `this`!
 
+## Desestructuración en JavaScript
+
+> [Parte 1 -> c. Estado del componente, controladores de eventos -> Desestructuración](https://fullstackopen.com/es/part1/estado_del_componente_controladores_de_eventos#desestructuracion)
+
+La desestructuración es un **atajo sintáctico** para extraer valores de **arrays** o propiedades de **objetos** y asignarlos a variables individuales de forma rápida.
+
+### 🔑 Con Objetos:
+
+Extrae propiedades por nombre.
+
+```javascript
+const persona = { nombre: "Ana", edad: 30, pais: "España" };
+
+// ⚡ Forma tradicional (verbose)
+const nombre = persona.nombre;
+const edad = persona.edad;
+
+// ✅ Con desestructuración (compacto)
+const { nombre, edad } = persona;
+
+console.log(nombre); // 'Ana'
+console.log(edad); // 30
+```
+
+- **Renombrar variables**:
+
+  `const { nombre: primerNombre } = persona;`
+
+- **Valores por defecto**:
+
+  `const { mascota = 'No tiene' } = persona;`
+
+### 🔢 Con Arrays:
+
+Extrae elementos por posición.
+
+```javascript
+const colores = ["rojo", "verde", "azul"];
+
+// ⚡ Forma tradicional
+const primerColor = colores[0];
+
+// ✅ Con desestructuración
+const [primer, segundo] = colores;
+
+console.log(primer); // 'rojo'
+console.log(segundo); // 'verde'
+```
+
+- **Saltar elementos**:
+
+`const [ , , tercero] = colores; // 'azul'`
+
+- **Valores por defecto**:
+
+`const [primero, segundo, tercero, cuarto = 'negro'] = colores;`
+
+### 💡 Usos Comunes en React:
+
+1. **Props en componentes**:
+
+```jsx
+const MiComponente = ({ titulo, onClick }) => {
+  return <button onClick={onClick}>{titulo}</button>;
+};
+```
+
+2. **Importar módulos**:
+
+```javascript
+import { useState, useEffect } from "react";
+```
+
+3. **Manejar respuestas API**:
+
+```javascript
+fetch("/api/data").then(({ data, status }) => {
+  /* ... */
+});
+```
+
 ## Por qué algunos elementos se guardan en estados y no en variables
 
 En React, los datos que afectan a la interfaz de usuario (como las notas en esta aplicación) deben almacenarse en un estado en lugar de en una variable normal.
