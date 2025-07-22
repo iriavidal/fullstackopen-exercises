@@ -319,15 +319,13 @@ Si guardas las notas en una variable normal, React no se dará cuenta cuando cam
 
 Ejemplo:
 
-````
-
+```js
 let notes = []; // Variable normal
 
 const addNote = () => {
-notes.push({ content: "Nueva nota", important: false });
-console.log(notes); // Se actualiza el array en la consola
+  notes.push({ content: "Nueva nota", important: false });
+  console.log(notes); // Se actualiza el array en la consola
 };
-
 ```
 
 **Problema**: aunque la variable `notes` cambia, React no se entera y la interfaz no se actualiza.
@@ -337,15 +335,13 @@ console.log(notes); // Se actualiza el array en la consola
 Cuando usas `useState`, React **sabe que los datos cambiaron** y vuelve a renderizar el componente con la nueva información.
 Ejemplo:
 
-```
-
+```js
 const [notes, setNotes] = useState([]);
 
 const addNote = () => {
-const newNote = { content: "Nueva nota", important: false };
-setNotes(notes.concat(newNote)); // React detecta el cambio y re-renderiza
+  const newNote = { content: "Nueva nota", important: false };
+  setNotes(notes.concat(newNote)); // React detecta el cambio y re-renderiza
 };
-
 ```
 
 **Ventaja**: cuando llamas `setNotes`, React actualiza la interfaz automáticamente.
@@ -355,24 +351,20 @@ setNotes(notes.concat(newNote)); // React detecta el cambio y re-renderiza
 Las variables normales se reinician en cada renderizado, mientras que el estado se mantiene.
 Ejemplo de variable normal:
 
-```
-
+```js
 let notes = []; // Se vacía cada vez que se renderiza el componente
 
 const addNote = () => {
-notes.push("Nueva nota");
+  notes.push("Nueva nota");
 };
-
 ```
 
 Cada vez que el componente se renderiza, la variable `notes` se vuelve a definir como un array vacío. Por eso los datos desaparecen.
 
 Solución:
 
-```
-
+```js
 const [notes, setNotes] = useState([]); // Se mantiene entre renders
-
 ```
 
 Ahora, aunque el componente se vuelva a renderizar, el estado recuerda las notas.
@@ -381,12 +373,10 @@ Ahora, aunque el componente se vuelva a renderizar, el estado recuerda las notas
 
 El estado también permite que otros efectos (como `useEffect`) respondan a los cambios. Por ejemplo, si las notas cambian, podrías guardar automáticamente en el servidor o hacer animaciones.
 
-```
-
+```js
 useEffect(() => {
-console.log("El estado de notas cambió:", notes);
+  console.log("El estado de notas cambió:", notes);
 }, [notes]); // Se ejecuta cada vez que las notas cambian
-
 ```
 
 ## Acerca de los tipos de solicitudes HTTP
@@ -407,11 +397,9 @@ Para conectar el frontend al backend, cambiamos la URL en el archivo `notes.js` 
 
 Para solucionar esto, usamos CORS (Cross-Origin Resource Sharing), un mecanismo que permite solicitudes entre distintos orígenes. En nuestro backend, instalamos y configuramos el middleware CORS con:
 
-```
-
-const cors = require('cors')
-app.use(cors())
-
+```js
+const cors = require("cors");
+app.use(cors());
 ```
 
 Esto permite que el frontend en `localhost:5173/` pueda comunicarse con el backend en `localhost:3001`. Ahora el frontend puede obtener las notas correctamente, aunque algunas funcionalidades aún no están implementadas en el backend.
@@ -437,33 +425,27 @@ Si se establece en `false`, Mongoose permite realizar consultas con propiedades 
 
 Supongamos que tenemos un esquema en Mongoose para una colección de usuarios:
 
-```
-
+```js
 const userSchema = new mongoose.Schema({
-name: String,
-age: Number
+  name: String,
+  age: Number,
 });
 
 const User = mongoose.model("User", userSchema);
-
 ```
 
 Si intentamos hacer una consulta con una propiedad no definida en el esquema:
 
-```
-
+```js
 User.find({ email: "test@example.com" })
-.then(result => console.log(result))
-.catch(error => console.error(error));
-
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error));
 ```
 
 Con strictQuery activado (true), Mongoose ignorará la propiedad email porque no está definida en el esquema, y la consulta se traducirá a:
 
-```
-
-User.find({}) // Devuelve todos los usuarios
-
+```js
+User.find({}); // Devuelve todos los usuarios
 ```
 
 Lo que significa que la consulta no filtrará nada y devolverá todos los documentos en la colección.
@@ -472,18 +454,14 @@ Lo que significa que la consulta no filtrará nada y devolverá todos los docume
 
 Si en cambio desactivamos `strictQuery` con:
 
-```
-
+```js
 mongoose.set("strictQuery", false);
-
 ```
 
 Mongoose **no ignorará** la consulta con `email`, sino que la enviará a MongoDB tal como está:
 
-```
-
-User.find({ email: "test@example.com" })
-
+```js
+User.find({ email: "test@example.com" });
 ```
 
 En este caso, MongoDB intentará buscar documentos que tengan la propiedad `email`. Si bien en la mayoría de los casos no devolverá resultados (porque `email` no está en el esquema), en algunos casos puede funcionar si en la base de datos ya existen documentos que tienen esta propiedad de alguna manera.
@@ -492,14 +470,12 @@ En este caso, MongoDB intentará buscar documentos que tengan la propiedad `emai
 
 Un **esquema** en Mongoose es una estructura que define la forma que tendrán los documentos dentro de una colección de MongoDB. Es como un "molde" o "plantilla" que indica qué propiedades tendrá cada documento, qué tipo de datos pueden almacenar y si deben cumplir ciertas reglas o restricciones. Ejemplo:
 
-```
-
+```js
 const noteSchema = new mongoose.Schema({
-content: String,
-important: Boolean,
+  content: String,
+  important: Boolean,
 });
-
-````
+```
 
 ## Cómo añadir las variables del archivo .env en Render
 
