@@ -29,6 +29,189 @@ npm install
 npm run dev
 ```
 
+## Componentes
+
+> [Parte 1 -> a. Introducción a React -> Componente](https://fullstackopen.com/es/part1/introduccion_a_react#componente)
+
+Un componente es una **función o clase JavaScript** que retorna elementos de React (usualmente JSX) para describir una parte de la UI. Su propósito es ser **reutilizable, independiente y encapsular lógica + vista**.
+
+### 🔑 **Características clave vs Angular:**
+
+| React                                         | Angular                                              |
+| --------------------------------------------- | ---------------------------------------------------- |
+| **Funcional** (con hooks) o **Clase**         | **Clases** decoradas con `@Component`                |
+| Props (flujo unidireccional)                  | `@Input()` / `@Output()`                             |
+| Estado gestionado con `useState`/`useReducer` | Gestión con propiedades de clase + `ChangeDetection` |
+| **Sin inyección de dependencias automática**  | Inyección de dependencias integrada                  |
+
+### 🧩 **Estructura Básica (Función):**
+
+```jsx
+// 1. Importar React (y hooks si son necesarios)
+import React, { useState } from "react";
+// 2. Definir el componente como función
+const MiComponente = (props) => {
+  // Lógica interna (estado, efectos, etc)
+  const [contador, setContador] = useState(0);
+  // 3. Retornar JSX (lo que se renderiza)
+  return (
+    <div>
+      <h1>Hola, {props.nombre}</h1>
+      <p>Contador: {contador}</p>
+      <button onClick={() => setContador(contador + 1)}>Incrementar</button>
+    </div>
+  );
+};
+// 4. Exportar (para usarlo en otros lugares)
+export default MiComponente;
+```
+
+### ⚙️ **Partes Fundamentales:**
+
+1. **Props (Propiedades)**:
+
+   - Datos que un componente **recibe desde su padre** (inmutables).
+   - En React **no hay two-way binding por defecto** (como en Angular). Se usan funciones para comunicar cambios al padre.
+
+   ```js
+   const Hello = (props) => {
+     console.log(props);
+     return (
+       <div>
+         <p>
+           Hello {props.name}, you are {props.age} years old
+         </p>
+       </div>
+     );
+   };
+
+   const App = () => {
+     const name = "Peter";
+     const age = 10;
+
+     return (
+       <div>
+         <h1>Greetings</h1>
+         <Hello name="Maya" age={26 + 10} />
+         <Hello name={name} age={age} />
+       </div>
+     );
+   };
+   ```
+
+2. **Estado**:
+
+- Datos que el componente **gestiona internamente** (usando `useState` o `useReducer`).
+- Cuando cambia, React **vuelve a renderizar** el componente (y sus hijos necesarios).
+
+3. **JSX**:
+
+- Sintaxis similar a HTML que describe la UI.
+- **¡No es HTML!** Es azúcar sintáctico para `React.createElement(...)`.
+
+4. **Hooks** (como `useState`, `useEffect`):
+
+- Permiten "enganchar" estado y ciclo de vida en **componentes funcionales** (después de React 16.8).
+
+### ↔️ **Flujo de Datos:**
+
+- **Unidireccional**: Padres → Hijos (vía props).
+- **Comunicación entre componentes**:
+- **Padre → Hijo**: Props.
+- **Hijo → Padre**: Callbacks (pasados como props).
+- **Hermanos/Global**: Context API o gestión de estado (Redux, Zustand).
+
+## JSX
+
+> [Parte 1 -> a. Introducción a React -> JSX](https://fullstackopen.com/es/part1/introduccion_a_react#jsx)
+
+**JSX: JavaScript + XML (o HTML)**. Es una **extensión de sintaxis** que permite escribir "HTML" dentro de JavaScript. No es un string ni HTML real, sino una representación de elementos React.
+
+### 🔍 Conceptos Clave:
+
+1. **Naturaleza Fundamental**
+
+```jsx
+const elemento = <h1 className="titulo">Hola Mundo</h1>;
+```
+
+- **Se compila a**:
+
+  `React.createElement('h1', { className: 'titulo' }, 'Hola Mundo')`
+
+- **Output**: Objeto JavaScript que describe la UI (elemento React)
+
+2. **Diferencias con Plantillas de Angular**
+   | Característica | JSX (React) | Plantillas (Angular) |
+   | ---------- | -------- | --------------|
+   | **Lenguaje** | JavaScript (todo en .js/.jsx) | HTML con sintaxis propia |
+   | **Directivas** | No existen (usas JS puro) | *ngIf, *ngFor, etc. |
+   | **Scoping** | Todo está en mismo ámbito JS | Contexto propio de plantilla |
+   | **Estilos** | `className`, `style={{ }}` | `class`, `[style]` |
+
+### ⚙️ Reglas de Sintaxis Esenciales:
+
+1.  **Embed JavaScript con `{ }`**
+
+    ```jsx
+    <h3>Hola, {usuario.nombre.toUpperCase()}</h3>
+    ```
+
+2.  **Atributos Diferentes a HTML**
+    ```jsx
+    <input
+      type="text"
+      className="mi-clase" // ≠ class (palabra reservada JS)
+      htmlFor="input-id" // ≠ for (palabra reservada)
+      style={{ color: "red" }} // Objeto JS (camelCase propiedades)
+    />
+    ```
+3.  **Solo Un Elemento Raíz**
+
+    ```jsx
+    // ❌ Incorrecto
+    return (
+      <p>Párrafo 1</p>
+      <p>Párrafo 2</p>
+    );
+
+    // ✅ Correcto (usar fragmentos <> o div)
+    return (
+      <>
+       <p>Párrafo 1</p>
+       <p>Párrafo 2</p>
+      </>
+    );
+    ```
+
+4.  **Listas Necesitan `key`**
+
+    ```jsx
+    {
+      items.map((item) => <li key={item.id}>{item.nombre}</li>);
+    }
+    ```
+
+### 🎯 Ejemplo Comparativo Angular → JSX:
+
+```html
+<!-- Angular -->
+<div *ngIf="user">
+  <h2 [class.active]="isActive">{{ user.name }}</h2>
+</div>
+```
+
+```jsx
+// React/JSX
+{
+  user && (
+    <div>
+      <h2 className={isActive ? "active" : ""}>{user.name}</h2>
+    </div>
+  );
+}
+```
+
 ## Por qué algunos elementos se guardan en estados y no en variables
 
 En React, los datos que afectan a la interfaz de usuario (como las notas en esta aplicación) deben almacenarse en un estado en lugar de en una variable normal.
@@ -39,13 +222,15 @@ Si guardas las notas en una variable normal, React no se dará cuenta cuando cam
 
 Ejemplo:
 
-```
+````
+
 let notes = []; // Variable normal
 
 const addNote = () => {
-  notes.push({ content: "Nueva nota", important: false });
-  console.log(notes); // Se actualiza el array en la consola
+notes.push({ content: "Nueva nota", important: false });
+console.log(notes); // Se actualiza el array en la consola
 };
+
 ```
 
 **Problema**: aunque la variable `notes` cambia, React no se entera y la interfaz no se actualiza.
@@ -56,12 +241,14 @@ Cuando usas `useState`, React **sabe que los datos cambiaron** y vuelve a render
 Ejemplo:
 
 ```
+
 const [notes, setNotes] = useState([]);
 
 const addNote = () => {
-  const newNote = { content: "Nueva nota", important: false };
-  setNotes(notes.concat(newNote)); // React detecta el cambio y re-renderiza
+const newNote = { content: "Nueva nota", important: false };
+setNotes(notes.concat(newNote)); // React detecta el cambio y re-renderiza
 };
+
 ```
 
 **Ventaja**: cuando llamas `setNotes`, React actualiza la interfaz automáticamente.
@@ -72,11 +259,13 @@ Las variables normales se reinician en cada renderizado, mientras que el estado 
 Ejemplo de variable normal:
 
 ```
+
 let notes = []; // Se vacía cada vez que se renderiza el componente
 
 const addNote = () => {
-  notes.push("Nueva nota");
+notes.push("Nueva nota");
 };
+
 ```
 
 Cada vez que el componente se renderiza, la variable `notes` se vuelve a definir como un array vacío. Por eso los datos desaparecen.
@@ -84,7 +273,9 @@ Cada vez que el componente se renderiza, la variable `notes` se vuelve a definir
 Solución:
 
 ```
+
 const [notes, setNotes] = useState([]); // Se mantiene entre renders
+
 ```
 
 Ahora, aunque el componente se vuelva a renderizar, el estado recuerda las notas.
@@ -94,9 +285,11 @@ Ahora, aunque el componente se vuelva a renderizar, el estado recuerda las notas
 El estado también permite que otros efectos (como `useEffect`) respondan a los cambios. Por ejemplo, si las notas cambian, podrías guardar automáticamente en el servidor o hacer animaciones.
 
 ```
+
 useEffect(() => {
-  console.log("El estado de notas cambió:", notes);
+console.log("El estado de notas cambió:", notes);
 }, [notes]); // Se ejecuta cada vez que las notas cambian
+
 ```
 
 ## Acerca de los tipos de solicitudes HTTP
@@ -118,8 +311,10 @@ Para conectar el frontend al backend, cambiamos la URL en el archivo `notes.js` 
 Para solucionar esto, usamos CORS (Cross-Origin Resource Sharing), un mecanismo que permite solicitudes entre distintos orígenes. En nuestro backend, instalamos y configuramos el middleware CORS con:
 
 ```
+
 const cors = require('cors')
 app.use(cors())
+
 ```
 
 Esto permite que el frontend en `localhost:5173/` pueda comunicarse con el backend en `localhost:3001`. Ahora el frontend puede obtener las notas correctamente, aunque algunas funcionalidades aún no están implementadas en el backend.
@@ -146,26 +341,32 @@ Si se establece en `false`, Mongoose permite realizar consultas con propiedades 
 Supongamos que tenemos un esquema en Mongoose para una colección de usuarios:
 
 ```
+
 const userSchema = new mongoose.Schema({
-  name: String,
-  age: Number
+name: String,
+age: Number
 });
 
 const User = mongoose.model("User", userSchema);
+
 ```
 
 Si intentamos hacer una consulta con una propiedad no definida en el esquema:
 
 ```
+
 User.find({ email: "test@example.com" })
-  .then(result => console.log(result))
-  .catch(error => console.error(error));
+.then(result => console.log(result))
+.catch(error => console.error(error));
+
 ```
 
 Con strictQuery activado (true), Mongoose ignorará la propiedad email porque no está definida en el esquema, y la consulta se traducirá a:
 
 ```
-User.find({})  // Devuelve todos los usuarios
+
+User.find({}) // Devuelve todos los usuarios
+
 ```
 
 Lo que significa que la consulta no filtrará nada y devolverá todos los documentos en la colección.
@@ -175,13 +376,17 @@ Lo que significa que la consulta no filtrará nada y devolverá todos los docume
 Si en cambio desactivamos `strictQuery` con:
 
 ```
+
 mongoose.set("strictQuery", false);
+
 ```
 
 Mongoose **no ignorará** la consulta con `email`, sino que la enviará a MongoDB tal como está:
 
 ```
+
 User.find({ email: "test@example.com" })
+
 ```
 
 En este caso, MongoDB intentará buscar documentos que tengan la propiedad `email`. Si bien en la mayoría de los casos no devolverá resultados (porque `email` no está en el esquema), en algunos casos puede funcionar si en la base de datos ya existen documentos que tienen esta propiedad de alguna manera.
@@ -191,11 +396,13 @@ En este caso, MongoDB intentará buscar documentos que tengan la propiedad `emai
 Un **esquema** en Mongoose es una estructura que define la forma que tendrán los documentos dentro de una colección de MongoDB. Es como un "molde" o "plantilla" que indica qué propiedades tendrá cada documento, qué tipo de datos pueden almacenar y si deben cumplir ciertas reglas o restricciones. Ejemplo:
 
 ```
+
 const noteSchema = new mongoose.Schema({
-  content: String,
-  important: Boolean,
+content: String,
+important: Boolean,
 });
-```
+
+````
 
 ## Cómo añadir las variables del archivo .env en Render
 
