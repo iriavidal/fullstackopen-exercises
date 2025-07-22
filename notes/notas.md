@@ -212,6 +212,22 @@ const elemento = <h1 className="titulo">Hola Mundo</h1>;
 }
 ```
 
+## `this` en JavaScript
+
+> [Parte 1 -> b. JavaScript -> Métodos de objeto y "this"](https://fullstackopen.com/es/part1/java_script#metodos-de-objeto-y-this)
+
+- **Qué es**: Referencia dinámica al objeto "dueño" de una función.
+- **Problema**: Cambia según cómo se llame la función.
+  - `objeto.metodo()` → `this = objeto`
+  - `const ref = objeto.metodo; ref()` → `this = global` (o undefined)
+- **Soluciones**:
+  1. `.bind(objeto)` - Fija `this` permanentemente.
+  2. Arrow functions - Toman `this` del contexto exterior (útil en callbacks).
+  3. Evitar en métodos de objetos literales.
+- **En React**:
+  - Componentes clase: Necesitaban `bind` en constructores.
+  - Componentes función (Hooks): ¡No usan `this`!
+
 ## Por qué algunos elementos se guardan en estados y no en variables
 
 En React, los datos que afectan a la interfaz de usuario (como las notas en esta aplicación) deben almacenarse en un estado en lugar de en una variable normal.
