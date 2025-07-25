@@ -3,7 +3,13 @@
 ## Índice
 
 - [Cómo crear e iniciar un proyecto en React](#cómo-crear-e-iniciar-un-proyecto-en-react)
+- [Componentes](#componentes)
+- [JSX](#jsx)
+- [`this` en JavaScript](#this-en-javascript)
+- [Desestructuración en JavaScript](#desestructuración-en-javascript)
 - [Por qué algunos elementos se guardan en estados y no en variables](#por-qué-algunos-elementos-se-guardan-en-estados-y-no-en-variables)
+- [Hooks](#hooks)
+- [Uso del Atributo `key` en React](#uso-del-atributo-key-en-react)
 - [Acerca de los tipos de solicitudes HTTP](#acerca-de-los-tipos-de-solicitudes-http)
 - [Política de mismo origen y CORS](#política-de-mismo-origen-y-cors)
 - [dashboard.render.com - Configuración](#dashboardrendercom)
