@@ -311,6 +311,8 @@ fetch("/api/data").then(({ data, status }) => {
 
 ## Por qué algunos elementos se guardan en estados y no en variables
 
+> [Parte 1 -> c. Estado del componente, controladores de eventos -> Componente con estado](https://fullstackopen.com/es/part1/estado_del_componente_controladores_de_eventos#componente-con-estado)
+
 En React, los datos que afectan a la interfaz de usuario (como las notas en esta aplicación) deben almacenarse en un estado en lugar de en una variable normal.
 
 ### 1. React NO detecta cambios en variables normales
@@ -378,6 +380,242 @@ useEffect(() => {
   console.log("El estado de notas cambió:", notes);
 }, [notes]); // Se ejecuta cada vez que las notas cambian
 ```
+
+## Hooks
+
+> [Parte 1 -> d. Un estado más complejo, depurando aplicaciones React -> Reglas de los Hooks](https://fullstackopen.com/es/part1/un_estado_mas_complejo_depurando_aplicaciones_react#reglas-de-los-hooks)
+
+**Qué son**: Funciones especiales que permiten "enganchar" funcionalidades de React (como estado y ciclo de vida) en **componentes funcionales**. Introducidos en React 16.8 (2019).
+
+### 🧩 Principales Hooks
+
+1. **`useState`**
+
+   - Maneja **estado local** en componentes funcionales
+   - Retorna: [valor, funciónParaActualizar]
+   - Reemplaza `this.setState` de componentes clase
+
+   ```jsx
+   import { useState } from "react";
+
+   function Contador() {
+     const [count, setCount] = useState(0); // Valor inicial 0
+
+     return (
+       <div>
+         <p>Contador: {count}</p>
+         <button onClick={() => setCount(count + 1)}>Incrementar</button>
+       </div>
+     );
+   }
+   ```
+
+2. **`useEffect`**
+
+   - Maneja **efectos secundarios** (peticiones API, suscripciones, manipulación DOM)
+   - Equivale a `componentDidMount`, `componentDidUpdate` y `componentWillUnmount` combinados
+   - Control de ejecución con array de dependencias
+
+   ```jsx
+   import { useState, useEffect } from "react";
+
+   function Usuario() {
+     const [user, setUser] = useState(null);
+
+     // Equivalente a componentDidMount
+     useEffect(() => {
+       fetch("/api/user")
+         .then((res) => res.json())
+         .then((data) => setUser(data));
+     }, []); // Array vacío = solo al montar
+
+     // Actualiza título cuando user cambia
+     useEffect(() => {
+       document.title = user ? user.name : "Cargando...";
+     }, [user]); // Se ejecuta cuando user cambia
+
+     return <div>{user?.name || "Cargando..."}</div>;
+   }
+   ```
+
+3. **`useContext`**
+
+   - Accede al valor de un **contexto** React sin componente proveedor anidado
+   - Solución elegante para evitar "prop drilling"
+
+   ```jsx
+   import { createContext, useContext } from "react";
+
+   // 1. Crear contexto
+   const TemaContext = createContext("claro");
+
+   function App() {
+     return (
+       // 2. Proveer valor
+       <TemaContext.Provider value="oscuro">
+         <Toolbar />
+       </TemaContext.Provider>
+     );
+   }
+
+   function Toolbar() {
+     // 3. Consumir valor
+     const tema = useContext(TemaContext);
+     return (
+       <div style={{ background: tema === "oscuro" ? "#333" : "#FFF" }}>
+         Tema Actual: {tema}
+       </div>
+     );
+   }
+   ```
+
+### ⚙️ Otros Hooks Importantes
+
+- **`useRef`**:  
+  Crea referencias mutables a elementos DOM o valores persistentes entre renders
+
+  ```jsx
+  import { useRef, useEffect } from "react";
+
+  function InputFocus() {
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+      // Enfocar input al montar
+      inputRef.current.focus();
+    }, []);
+
+    return <input ref={inputRef} type="text" />;
+  }
+  ```
+
+- **`useReducer`**:  
+  Alternativa a `useState` para manejar lógica de estado compleja (estilo Redux)
+
+  ```jsx
+  import { useReducer } from "react";
+
+  // Reducer function
+  function contadorReducer(state, action) {
+    switch (action.type) {
+      case "incrementar":
+        return { count: state.count + 1 };
+      case "decrementar":
+        return { count: state.count - 1 };
+      default:
+        throw new Error();
+    }
+  }
+
+  function Contador() {
+    const [state, dispatch] = useReducer(contadorReducer, { count: 0 });
+
+    return (
+      <div>
+        <p>Count: {state.count}</p>
+        <button onClick={() => dispatch({ type: "incrementar" })}>+</button>
+        <button onClick={() => dispatch({ type: "decrementar" })}>-</button>
+      </div>
+    );
+  }
+  ```
+
+- **`useMemo`** y **`useCallback`**:  
+   Optimizan rendimiento memoizando valores y funciones.
+
+  **📝 Nota Clave**:  
+  Los hooks de memoización (`useMemo`, `useCallback`) deben usarse solo cuando son necesarios para optimizar rendimiento en componentes con renders costosos.
+
+### 📜 Reglas Fundamentales
+
+1. **Solo llamar Hooks en el nivel superior**
+   - Nunca dentro de bucles, condicionales o funciones anidadas
+2. **Solo llamar Hooks desde:**
+   - Componentes funcionales de React
+   - Custom Hooks (tus propios hooks)
+
+### 💡 Por qué son Revolucionarios
+
+- **Simplifican componentes**: Eliminan complejidad de clases (`this`, constructores)
+- **Reutilización de lógica**: Custom Hooks permiten compartir lógica entre componentes
+- **Código más organizado**: Agrupan funcionalidad relacionada (ej: datos + carga)
+- **Adopción masiva**: Estándar actual en nuevos proyectos React
+
+## Uso del Atributo `key` en React
+
+> [Parte 2 -> a Renderizando una colección, módulos -> Atributo key](https://fullstackopen.com/es/part2/renderizando_una_coleccion_modulos#atributo-key)
+
+El atributo `key` es un identificador especial que ayuda a React a **diferenciar componentes hermanos** en una lista. Es una propiedad obligatoria al renderizar arrays de elementos.
+
+### ❗ **Por qué es necesario**
+
+1. **Identificación única**:  
+   React usa las `keys` para reconocer qué elementos han cambiado, se han añadido o eliminado.
+2. **Optimización de rendimiento**:  
+   Permite a React actualizar solo los elementos modificados en lugar de re-renderizar toda la lista.
+
+3. **Mantenimiento del estado**:  
+   Evita errores al preservar el estado interno de componentes (como inputs) durante re-renders.
+
+### ⚠️ **Consecuencias de omitirlo**
+
+- Advertencia en consola: _"Warning: Each child in a list should have a unique key prop"_
+- Comportamiento errático en interfaces (estados de componentes que "saltan" entre elementos)
+- Pérdida de rendimiento al re-renderizar toda la lista innecesariamente
+
+### ✅ **Buenas prácticas**
+
+1. **Usar datos únicos y estables** como:
+
+   - IDs de base de datos (ideal)
+   - Valores criptográficos (UUIDs)
+
+   ```jsx
+   {
+     items.map((item) => (
+       <li key={item.id}>{item.name}</li> // ✔️ ID único
+     ));
+   }
+   ```
+
+2. **Evitar como key**:
+
+   - Índices del array (solo si no hay alternativa)
+
+   - Valores aleatorios (generados en render)
+
+   ```jsx
+   // ❌ Evitar
+   {
+     items.map((item, index) => <li key={index}>{item.name}</li>);
+   }
+   ```
+
+3. **Reglas clave**:
+
+   - Deben ser **únicas** entre hermanos
+
+   - Deben ser **consistentes** entre renders
+
+   - No necesitan ser globalmente únicas
+
+### 🌐 Casos especiales
+
+- **Componentes sin lista**: No requieren `key`
+
+- **Fragmentos**: No aceptan atributos `key` (usar en elementos hijos)
+
+- **Reordenamientos dinámicos**: Claves estables previenen recreación de componentes
+
+### 💡 Por qué importa
+
+Las `keys` son fundamentales para:
+
+- Mantener el rendimiento óptimo en listas grandes
+
+- Garantizar un comportamiento predecible en interfaces dinámicas
+
+- Evitar bugs sutiles en formularios y estados complejos
 
 ## Acerca de los tipos de solicitudes HTTP
 
