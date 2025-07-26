@@ -549,7 +549,7 @@ useEffect(() => {
 
 ## Uso del Atributo `key` en React
 
-> [Parte 2 -> a Renderizando una colección, módulos -> Atributo key](https://fullstackopen.com/es/part2/renderizando_una_coleccion_modulos#atributo-key)
+> [Parte 2 -> a. Renderizando una colección, módulos -> Atributo key](https://fullstackopen.com/es/part2/renderizando_una_coleccion_modulos#atributo-key)
 
 El atributo `key` es un identificador especial que ayuda a React a **diferenciar componentes hermanos** en una lista. Es una propiedad obligatoria al renderizar arrays de elementos.
 
@@ -625,6 +625,8 @@ Las `keys` son fundamentales para:
 
 ## Acerca de los tipos de solicitudes HTTP
 
+> [Parte 3 -> a. Node.js y Express -> Acerca de los tipos de solicitudes HTTP](https://fullstackopen.com/es/part3/node_js_y_express#acerca-de-los-tipos-de-solicitudes-http)
+
 El estándar HTTP define dos propiedades importantes para las solicitudes: **seguridad** e **idempotencia**.
 
 1. **Seguridad (GET y HEAD)**: Las solicitudes GET y HEAD deben ser seguras, lo que significa que no deben cambiar nada en el servidor, solo obtener datos. En otras palabras, una solicitud GET no debería alterar el estado de la base de datos ni generar efectos secundarios.
@@ -635,7 +637,112 @@ El estándar HTTP define dos propiedades importantes para las solicitudes: **seg
 
 En resumen, GET y HEAD deben ser seguros (sin efectos secundarios), mientras que GET, HEAD, PUT y DELETE deben ser idempotentes (con el mismo resultado sin importar cuántas veces se realicen). POST es el único que no sigue estas reglas.
 
+## Middleware en Express
+
+> [Parte 3 -> a. Node.js y Express -> Middleware](https://fullstackopen.com/es/part3/node_js_y_express#middleware)
+
+Un middleware es una **función intermedia** que procesa objetos `request` y `response` en Express. Actúa como un "puente" entre la solicitud entrante y la respuesta final.
+
+---
+
+### ⚙️ **Funcionamiento Básico**
+
+```javascript
+const middleware = (request, response, next) => {
+  // 1. Procesa la solicitud (ej: leer datos)
+  // 2. Modifica request/response (opcional)
+  next(); // 3. Pasa el control al siguiente middleware
+};
+```
+
+### 🛠️ Características Clave
+
+1. **Encadenamiento**:
+
+   Se ejecutan en **orden secuencial** según se definen con `app.use()`.
+
+   ```javascript
+   app.use(middleware1);
+   app.use(middleware2); // Se ejecuta después de middleware1
+   ```
+
+2. **Acceso completo**:
+
+   Pueden leer/modificar `request` (ej: añadir `request.body`) y `response`.
+
+3. **Control de flujo**:
+
+   La función `next()` cede el control al siguiente middleware en la cadena.
+
+### 📌 Ejemplos del Curso
+
+1. `json-parser`:
+
+   Convierte el cuerpo de la solicitud (raw) → Objeto JavaScript en `request.body`.
+
+   ```javascript
+   // Sin json-parser
+   app.post("/api/notes", (req, res) => {
+     console.log(req.body); // => undefined!
+   });
+
+   // Con json-parser
+   app.use(express.json()); // Middleware mágico ✨
+
+   app.post("/api/notes", (req, res) => {
+     console.log(req.body); // => { title: "Comprar leche", important: true }
+   });
+   ```
+
+   - 🛠️ Proceso interno paso a paso:
+     1. **Intercepta solicitudes** con cabecera `Content-Type: application/json`
+     2. **Lee los datos** brutos del cuerpo de la solicitud
+     3. **Convierte** el JSON en objeto JavaScript
+     4. **Asigna el resultado** a `request.body`
+     5. **Pasa el control** al siguiente middleware (`next()`)
+
+2. `requestLogger`:
+
+   Registra detalles de cada solicitud:
+
+   ```javascript
+   const requestLogger = (req, res, next) => {
+     console.log("Method:", req.method);
+     console.log("Path: ", req.path);
+     console.log("Body: ", req.body);
+     next();
+   };
+   ```
+
+3. **Manejo de errores (404)**:
+
+   Se define **después de las rutas** para capturar solicitudes no manejadas:
+
+   ```javascript
+   const unknownEndpoint = (req, res) => {
+     res.status(404).send({ error: "unknown endpoint" });
+   };
+   ```
+
+### ⚠️ ¡Orden Crítico!
+
+El orden de declaración determina:
+
+- **Dependencias**:
+
+  Si un middleware necesita `request.body` (creado por `json-parser`), debe definirse **después**.
+
+- **Ubicación estratégica**:
+
+  - _Antes de rutas_: Ejecución en todas las solicitudes.
+
+  - _Después de rutas_: Solo para solicitudes no manejadas (ej: 404).
+
+> **Conclusión**: Los middleware son como estaciones de procesamiento en una cadena de montaje, donde cada uno transforma la solicitud antes de llegar al controlador final.
+
 ## Política de mismo origen y CORS
+
+> [Parte 3 -> b. Despliegue de la aplicación a Internet -> Política de mismo origen y CORS](https://fullstackopen.com/es/part3/despliegue_de_la_aplicacion_a_internet#politica-de-mismo-origen-y-cors)
 
 Para conectar el frontend al backend, cambiamos la URL en el archivo `notes.js` para que las notas se obtengan desde `http://localhost:3001/api/notes`. Sin embargo, la solicitud GET falla debido a la **política de mismo origen (Same-Origin Policy)**, una restricción de seguridad de los navegadores que impide que una web cargue recursos desde un servidor con un origen diferente (protocolo, host o puerto distinto).
 
@@ -649,6 +756,8 @@ app.use(cors());
 Esto permite que el frontend en `localhost:5173/` pueda comunicarse con el backend en `localhost:3001`. Ahora el frontend puede obtener las notas correctamente, aunque algunas funcionalidades aún no están implementadas en el backend.
 
 ## dashboard.render.com
+
+> [Parte 3 -> b. Despliegue de la aplicación a Internet -> Aplicación a Internet](https://fullstackopen.com/es/part3/despliegue_de_la_aplicacion_a_internet#aplicacion-a-internet)
 
 ### Configuración
 
@@ -1053,3 +1162,11 @@ npm run test -- -- --test-name-pattern="notes"
 ```
 
 También puedes usar partes del nombre, y funciona tanto con los títulos de `test()` como los de `describe()`.
+
+```
+
+```
+
+```
+
+```
