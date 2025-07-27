@@ -29,7 +29,7 @@ notesRouter.get("/:id", (request, response, next) => {
 });
 
 // Ruta POST para crear una nueva nota
-notesRouter.post("/", (request, response, next) => {
+notesRouter.post("/", async (request, response, next) => {
   // Obtenemos el contenido enviado en el cuerpo de la petición
   const body = request.body;
 
@@ -40,14 +40,9 @@ notesRouter.post("/", (request, response, next) => {
   });
 
   // Guardamos la nueva nota en la base de datos
-  note
-    .save()
-    .then((savedNote) => {
-      // Respondemos con la nota guardada
-      response.json(savedNote);
-    })
-    // En caso de error (por ejemplo, validación), lo pasamos al middleware de errores
-    .catch((error) => next(error));
+  const savedNote = await note.save();
+  // Respondemos con la nota guardada
+  response.status(201).json(savedNote);
 });
 
 // Ruta DELETE para eliminar una nota por su ID

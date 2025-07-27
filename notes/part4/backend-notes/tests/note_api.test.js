@@ -6,6 +6,9 @@ const assert = require("node:assert");
 // Importa la librería Mongoose para conectarse y trabajar con MongoDB
 const mongoose = require("mongoose");
 
+// Importa funciones de utilidad para pruebas
+const helper = require("./test_helper");
+
 // Importa la librería supertest para hacer peticiones HTTP al servidor en los tests
 const supertest = require("supertest");
 
@@ -15,7 +18,7 @@ const app = require("../app");
 // Crea una instancia de supertest usando nuestra app, para poder hacer peticiones como si fuéramos un cliente
 const api = supertest(app);
 
-const initialNotes = [
+/* const initialNotes = [
   {
     content: "HTML is easy",
     important: false,
@@ -24,13 +27,19 @@ const initialNotes = [
     content: "Browser can execute only JavaScript",
     important: true,
   },
-];
+]; */
 
+// Configuración ANTES de cada test
 beforeEach(async () => {
+  // 1. Vacía la colección de notas en la DB
   await Note.deleteMany({});
-  let noteObject = new Note(initialNotes[0]);
+
+  // 2. Guarda la primera nota inicial del helper
+  let noteObject = new Note(helper.initialNotes[0]);
   await noteObject.save();
-  noteObject = new Note(initialNotes[1]);
+
+  // 3. Guarda la segunda nota inicial del helper
+  noteObject = new Note(helper.initialNotes[1]);
   await noteObject.save();
 });
 
@@ -44,6 +53,20 @@ test.only("notes are returned as json", async () => {
     .expect("Content-Type", /application\/json/); // Espera que el contenido sea del tipo JSON
 });
 
+test("all notes are returned", async () => {
+  const response = await api.get("/api/notes");
+
+  assert.strictEqual(response.body.length, helper.initialNotes.length);
+});
+
+test("a specific note is within the returned notes", async () => {
+  const response = await api.get("/api/notes");
+
+  const contents = response.body.map((r) => r.content);
+
+  assert(contents.includes("Browser can execute only JavaScript"));
+});
+
 test.only("there are two notes", async () => {
   const response = await api.get("/api/notes");
 
@@ -55,6 +78,45 @@ test("the first note is about HTTP methods", async () => {
 
   const contents = response.body.map((e) => e.content);
   assert(contents.includes("HTML is easy"));
+});
+
+test("a valid note can be added ", async () => {
+  // 1. Crea objeto para nueva nota válida
+  const newNote = {
+    content: "async/await simplifies making async calls",
+    important: true,
+  };
+
+  // 2. Envía una petición POST al endpoint /api/notes
+  await api
+    .post("/api/notes") // 2.1 Especifica el método HTTP y ruta
+    .send(newNote) // 2.2 Adjunta el objeto newNote como cuerpo de la petición
+    .expect(201) // 2.3 Verifica que el status code sea 201 (Created)
+    .expect("Content-Type", /application\/json/); // 2.4 Verifica que la respuesta sea JSON
+
+  // 3. Obtiene TODAS las notas actuales desde DB
+  const notesAtEnd = await helper.notesInDb();
+
+  // 4. Verifica longitud: notas iniciales + 1 nueva
+  assert.strictEqual(notesAtEnd.length, helper.initialNotes.length + 1);
+
+  // 5. Extrae solo los contenidos de las notas
+  const contents = notesAtEnd.map((n) => n.content);
+
+  // 6. Verifica que el contenido de la nueva nota existe en la lista
+  assert(contents.includes("async/await simplifies making async calls"));
+});
+
+test("note without content is not added", async () => {
+  const newNote = {
+    important: true,
+  };
+
+  await api.post("/api/notes").send(newNote).expect(400);
+
+  const notesAtEnd = await helper.notesInDb();
+
+  assert.strictEqual(notesAtEnd.length, helper.initialNotes.length);
 });
 
 // Después de que todas las pruebas hayan terminado, cierra la conexión a la base de datos MongoDB

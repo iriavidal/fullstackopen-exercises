@@ -1042,6 +1042,8 @@ console.log(likesPerAuthor);
 
 ## Entorno de prueba
 
+> [Parte 4 -> b. Probando el backend -> Entorno de prueba](https://fullstackopen.com/es/part4/probando_el_backend#entorno-de-prueba)
+
 ### ¿Qué es el entorno de prueba y para qué sirve?
 
 Cuando creamos una aplicación con Node.js, esta puede comportarse de forma diferente según el entorno en el que se esté ejecutando:
@@ -1130,6 +1132,8 @@ Porque nos permite tener comportamientos distintos según el entorno. Por ejempl
 
 ## Ejecución de pruebas individualmente
 
+> [Parte 4 -> b. Probando el backend -> Ejecución de pruebas una por una](https://fullstackopen.com/es/part4/probando_el_backend#ejecucion-de-pruebas-una-por-una)
+
 Por defecto, el comando:
 
 ```bash
@@ -1177,11 +1181,3 @@ npm run test -- -- --test-name-pattern="notes"
 ```
 
 También puedes usar partes del nombre, y funciona tanto con los títulos de `test()` como los de `describe()`.
-
-```
-
-```
-
-```
-
-```
