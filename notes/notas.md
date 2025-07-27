@@ -766,6 +766,8 @@ Esto permite que el frontend en `localhost:5173/` pueda comunicarse con el backe
 
 ## mongoose.set("strictQuery", false);
 
+> [Parte 3 -> c. Guardando datos en MongoDB -> MongoDB](https://fullstackopen.com/es/part3/guardando_datos_en_mongo_db#mongo-db)
+
 Esta línea de código en Mongoose desactiva el **modo de consulta estricta** (strictQuery).
 
 ### ¿Qué es `strictQuery` en Mongoose?
@@ -821,6 +823,8 @@ En este caso, MongoDB intentará buscar documentos que tengan la propiedad `emai
 
 ## Qué es un esquema en Mongoose
 
+> [Parte 3 -> c. Guardando datos en MongoDB -> Schema](https://fullstackopen.com/es/part3/guardando_datos_en_mongo_db#schema)
+
 Un **esquema** en Mongoose es una estructura que define la forma que tendrán los documentos dentro de una colección de MongoDB. Es como un "molde" o "plantilla" que indica qué propiedades tendrá cada documento, qué tipo de datos pueden almacenar y si deben cumplir ciertas reglas o restricciones. Ejemplo:
 
 ```js
@@ -828,9 +832,18 @@ const noteSchema = new mongoose.Schema({
   content: String,
   important: Boolean,
 });
+
+const Note = mongoose.model("Note", noteSchema);
+
+const note = new Note({
+  content: "HTML is Easy",
+  important: false,
+});
 ```
 
 ## Cómo añadir las variables del archivo .env en Render
+
+> [Parte 3 -> c. Guardando datos en MongoDB -> Moviendo la configuración de la base de datos a su propio módulo](https://fullstackopen.com/es/part3/guardando_datos_en_mongo_db#moviendo-la-configuracion-de-la-base-de-datos-a-su-propio-modulo)
 
 ![Configuración variables de entorno en Render](./assets/env-render.jpg)
 
