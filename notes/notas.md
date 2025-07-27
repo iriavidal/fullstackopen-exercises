@@ -849,6 +849,8 @@ const note = new Note({
 
 ## Qué es Lodash
 
+> [Parte 4 -> a. Estructura de la aplicación backend, introducción a las pruebas -> Testing de aplicaciones Node (4.6\*: Funciones Auxiliares y Pruebas Unitarias, paso 4)](https://fullstackopen.com/es/part4/estructura_de_la_aplicacion_backend_introduccion_a_las_pruebas#testing-de-aplicaciones-node)
+
 **Lodash** es una librería de utilidades para JavaScript que facilita trabajar con arrays, objetos, strings, etc. Ayuda a escribir código más limpio y conciso, especialmente cuando se hacen cosas como:
 
 - Agrupar elementos (`_.groupBy`)
