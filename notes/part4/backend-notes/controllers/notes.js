@@ -12,20 +12,21 @@ notesRouter.get("/", async (request, response) => {
 });
 
 // Ruta GET para obtener una nota específica por su ID
-notesRouter.get("/:id", (request, response, next) => {
-  // Buscamos la nota por su ID usando el parámetro de la URL
-  Note.findById(request.params.id)
-    .then((note) => {
-      if (note) {
-        // Si se encuentra la nota, se envía como respuesta en formato JSON
-        response.json(note);
-      } else {
-        // Si no se encuentra la nota, se responde con un estado 404 (no encontrado)
-        response.status(404).end();
-      }
-    })
+notesRouter.get("/:id", async (request, response, next) => {
+  try {
+    // Buscamos la nota por su ID usando el parámetro de la URL
+    const note = Note.findById(request.params.id);
+    if (note) {
+      // Si se encuentra la nota, se envía como respuesta en formato JSON
+      response.json(note);
+    } else {
+      // Si no se encuentra la nota, se responde con un estado 404 (no encontrado)
+      response.status(404).end();
+    }
+  } catch (exception) {
     // Si ocurre un error (por ejemplo, ID mal formado), se pasa al middleware de manejo de errores
-    .catch((error) => next(error));
+    next(exception);
+  }
 });
 
 // Ruta POST para crear una nueva nota
@@ -39,22 +40,28 @@ notesRouter.post("/", async (request, response, next) => {
     important: body.important || false, // Si no se indica "important", se asume false
   });
 
-  // Guardamos la nueva nota en la base de datos
-  const savedNote = await note.save();
-  // Respondemos con la nota guardada
-  response.status(201).json(savedNote);
+  try {
+    // Guardamos la nueva nota en la base de datos
+    const savedNote = await note.save();
+    // Respondemos con la nota guardada
+    response.status(201).json(savedNote);
+  } catch (exception) {
+    next(exception);
+  }
 });
 
 // Ruta DELETE para eliminar una nota por su ID
-notesRouter.delete("/:id", (request, response, next) => {
-  // Buscamos y eliminamos la nota correspondiente al ID recibido
-  Note.findByIdAndDelete(request.params.id)
-    .then(() => {
-      // Respondemos con estado 204 (sin contenido) si la eliminación fue exitosa
-      response.status(204).end();
-    })
+notesRouter.delete("/:id", async (request, response, next) => {
+  try {
+    // Buscamos y eliminamos la nota correspondiente al ID recibido
+    await Note.findByIdAndDelete(request.params.id);
+
+    // Respondemos con estado 204 (sin contenido) si la eliminación fue exitosa
+    response.status(204).end();
+  } catch (exception) {
     // En caso de error, lo pasamos al middleware de errores
-    .catch((error) => next(error));
+    next(exception);
+  }
 });
 
 // Ruta PUT para actualizar una nota por su ID
