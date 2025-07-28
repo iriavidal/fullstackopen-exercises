@@ -14,7 +14,8 @@ notesRouter.get("/", async (request, response) => {
 // Ruta GET para obtener una nota específica por su ID
 notesRouter.get("/:id", async (request, response, next) => {
   // Buscamos la nota por su ID usando el parámetro de la URL
-  const note = Note.findById(request.params.id);
+  const note = await Note.findById(request.params.id);
+
   if (note) {
     // Si se encuentra la nota, se envía como respuesta en formato JSON
     response.json(note);

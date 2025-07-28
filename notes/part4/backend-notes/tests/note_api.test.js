@@ -29,24 +29,21 @@ const api = supertest(app);
   },
 ]; */
 
-// Configuración ANTES de cada test
+// Define una función asíncrona que se ejecutará ANTES de cada prueba (test)
 beforeEach(async () => {
-  // 1. Vacía la colección de notas en la DB
-  await Note.deleteMany({});
+  await Note.deleteMany({}); // 1. Elimina TODOS los documentos de la colección 'Note' en MongoDB
 
-  // 2. Guarda la primera nota inicial del helper
-  let noteObject = new Note(helper.initialNotes[0]);
-  await noteObject.save();
-
-  // 3. Guarda la segunda nota inicial del helper
-  noteObject = new Note(helper.initialNotes[1]);
-  await noteObject.save();
+  // 2. Itera sobre cada nota en el array 'helper.initialNotes'
+  for (let note of helper.initialNotes) {
+    let noteObject = new Note(note); // 3. Crea una nueva instancia del modelo Mongoose 'Note'
+    await noteObject.save(); // 4. Guarda la instancia en la base de datos (operación asíncrona)
+  }
+  /* Al hacer esto, nos aseguramos de que la base de datos esté en el mismo estado antes de ejecutar cada prueba. */
 });
 
-/* La base de datos se borra al principio, y luego guardamos las dos notas almacenadas en el array initialNotes en la base de datos. Al hacer esto, nos aseguramos de que la base de datos esté en el mismo estado antes de ejecutar cada prueba. */
-
 // Define una prueba que verifica que el endpoint /api/notes devuelve datos en formato JSON
-test.only("notes are returned as json", async () => {
+test("notes are returned as json", async () => {
+  console.log("entered test");
   await api
     .get("/api/notes") // Realiza una petición GET al endpoint /api/notes
     .expect(200) // Espera que la respuesta tenga un código de estado 200 (OK)
@@ -67,7 +64,7 @@ test("a specific note is within the returned notes", async () => {
   assert(contents.includes("Browser can execute only JavaScript"));
 });
 
-test.only("there are two notes", async () => {
+test("there are two notes", async () => {
   const response = await api.get("/api/notes");
 
   assert.strictEqual(response.body.length, helper.initialNotes.length);
@@ -119,10 +116,16 @@ test("note without content is not added", async () => {
   assert.strictEqual(notesAtEnd.length, helper.initialNotes.length);
 });
 
-test("a specific note can be viewed", async () => {
+test.only("a specific note can be viewed", async () => {
   const notesAtStart = await helper.notesInDb();
 
   const noteToView = notesAtStart[0];
+  console.log("Estoy en a specific note can be viewed", notesAtStart[0]);
+  console.log("Estoy en a specific note can be viewed", noteToView);
+  console.log(
+    "Estoy en a specific note can be viewed",
+    `/api/notes/${noteToView.id}`
+  );
 
   const resultNote = await api
     .get(`/api/notes/${noteToView.id}`)
