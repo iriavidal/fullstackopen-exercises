@@ -4,6 +4,9 @@ const config = require("./utils/config");
 // Importa Express, el framework web que usaremos para crear el servidor
 const express = require("express");
 
+// Importa el módulo 'express-async-errors' para manejar errores en funciones asíncronas automáticamente
+require("express-async-errors");
+
 // Crea una instancia de la aplicación Express
 const app = express();
 
