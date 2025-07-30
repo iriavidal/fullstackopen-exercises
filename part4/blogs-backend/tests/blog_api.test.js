@@ -29,13 +29,40 @@ beforeEach(async () => {
   }
 });
 
-test.only("los blogs son devueltos como JSON y su cantidad es correcta", async () => {
+test("los blogs son devueltos como JSON y su cantidad es correcta", async () => {
   const response = await request(app)
     .get("/api/blogs")
     .expect(200)
     .expect("Content-Type", /application\/json/);
 
   assert.strictEqual(response.body.length, initialBlogs.length);
+});
+
+test.only("a valid note can be added", async () => {
+  const newBlog = {
+    title: "Tercer blog de prueba",
+    author: "Autor 3",
+    url: "http://blog3.com",
+    likes: 33,
+  };
+
+  await request(app)
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await request(app).get("/api/blogs");
+
+  assert.strictEqual(response.body.length, initialBlogs.length + 1);
+
+  // console.log("response.body.length", response.body.length);
+  // console.log("initialBlogs.length + 1", initialBlogs.length + 1);
+
+  const titles = response.body.map((n) => n.title);
+  assert(titles.includes("Tercer blog de prueba"));
+
+  // console.log(response.body);
 });
 
 after(async () => {
