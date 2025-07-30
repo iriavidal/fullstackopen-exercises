@@ -9,8 +9,13 @@ const User = require("../models/user");
 
 // Ruta GET para obtener todos los usuarios desde la base de datos
 usersRouter.get("/", async (request, response) => {
-  // Buscamos todos los usuarios
-  const users = await User.find({});
+  const users = await User.find({}) // Busca todos los documentos de la colección "User"
+    .populate("notes", {
+      // Reemplaza el campo "notes" (array de IDs) en cada usuario...
+      content: 1, // ...por los documentos reales de nota, incluyendo solo el campo "content"
+      important: 1, // ...y también el campo "important"
+    });
+
   // Devolvemos los usuarios en formato JSON
   response.json(users);
 });
