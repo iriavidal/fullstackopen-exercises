@@ -113,7 +113,7 @@ test("sets likes to 0 when not provided in POST request", async () => {
   );
 });
 
-test.only("responds with 400 when title or url is missing", async () => {
+test("responds with 400 when title or url is missing", async () => {
   const invalidBlogs = [
     { author: "Autorx", url: "http://blog0.com" },
     { title: "Blog sin likes", author: "Autorx" },
@@ -122,6 +122,44 @@ test.only("responds with 400 when title or url is missing", async () => {
   for (const blog of invalidBlogs) {
     await request(app).post("/api/blogs").send(blog).expect(400);
   }
+});
+
+test("deletion of a note succeeds with status code 204 if id is valid", async () => {
+  const blogsAtStart = await request(app).get("/api/blogs");
+  const blogToDelete = blogsAtStart.body[0];
+
+  await request(app).delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+  const blogsAtEnd = await request(app).get("/api/blogs");
+  assert.strictEqual(blogsAtEnd.body.length, blogsAtStart.body.length - 1);
+
+  const titles = blogsAtEnd.body.map((r) => r.title);
+  assert(!titles.includes(blogToDelete.title));
+
+  // console.log("blogsAtStart", blogsAtStart.body);
+  // console.log("blogToDelete", blogToDelete);
+  // console.log("blogsAtEnd", blogsAtEnd.body);
+});
+
+test.only("updates blog likes successfully", async () => {
+  const blogsAtStart = await request(app).get("/api/blogs");
+  const blogToUpdate = blogsAtStart.body[0];
+
+  const updatedData = { likes: blogToUpdate.likes + 1 };
+
+  const response = await request(app)
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedData)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  assert.strictEqual(response.body.likes, blogToUpdate.likes + 1);
+
+  /* const blogsAtEnd = await request(app).get("/api/blogs");
+
+  console.log("blogsAtStart", blogsAtStart.body);
+  console.log("blogToUpdate", blogToUpdate);
+  console.log("blogsAtEnd", blogsAtEnd.body); */
 });
 
 after(async () => {
