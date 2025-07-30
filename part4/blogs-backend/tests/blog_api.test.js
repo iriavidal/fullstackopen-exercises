@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require("node:test");
+const { test, after, beforeEach, expect } = require("node:test");
 const assert = require("assert");
 const mongoose = require("mongoose");
 const request = require("supertest");
@@ -29,13 +29,31 @@ beforeEach(async () => {
   }
 });
 
-test.only("los blogs son devueltos como JSON y su cantidad es correcta", async () => {
+test("los blogs son devueltos como JSON y su cantidad es correcta", async () => {
   const response = await request(app)
     .get("/api/blogs")
     .expect(200)
     .expect("Content-Type", /application\/json/);
 
   assert.strictEqual(response.body.length, initialBlogs.length);
+});
+
+test.only("the unique identifier property of blog posts is named id", async () => {
+  const response = await request(app).get("/api/blogs");
+
+  const blogs = response.body;
+
+  for (const blog of blogs) {
+    assert.ok(blog.id, "Expected blog to have property 'id'");
+    assert.strictEqual(
+      blog._id,
+      undefined,
+      "Expected blog not to have property '_id'"
+    );
+
+    console.log(blog.id);
+    console.log(blog._id);
+  }
 });
 
 after(async () => {
