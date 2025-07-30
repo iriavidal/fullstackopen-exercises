@@ -22,6 +22,10 @@ const middleware = require("./utils/middleware");
 // Importa el logger, que se usa para imprimir información en consola
 const logger = require("./utils/logger");
 
+// Importa el router definido en el archivo "controllers/users.js".
+// Este router contiene las rutas relacionadas con los usuarios (crear usuario, obtener lista, etc.).
+const usersRouter = require("./controllers/users");
+
 // Importa Mongoose, que se usa para conectarse y trabajar con MongoDB
 const mongoose = require("mongoose");
 
@@ -57,6 +61,10 @@ app.use(middleware.requestLogger);
 
 // Todas las rutas que empiecen con "/api/notes" serán manejadas por el router importado
 app.use("/api/notes", notesRouter);
+
+// Monta el router de usuarios en la ruta "/api/users".
+// Todas las rutas definidas en usersRouter se accederán desde esta ruta base.
+app.use("/api/users", usersRouter);
 
 // Middleware para manejar peticiones a endpoints desconocidos (404)
 app.use(middleware.unknownEndpoint);
