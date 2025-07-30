@@ -9,6 +9,10 @@ const noteSchema = new mongoose.Schema({
     minlength: 5, // El contenido debe tener al menos 5 caracteres
   },
   important: Boolean, // Campo opcional que indica si la nota es importante o no
+  user: {
+    type: mongoose.Schema.Types.ObjectId, // Referencia al _id de un documento de tipo User
+    ref: "User", // Mongoose usará esta referencia para hacer 'populate'
+  },
 });
 
 // Modificamos cómo se convierte una nota a JSON (por ejemplo, al enviarla al frontend)
