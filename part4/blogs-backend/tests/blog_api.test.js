@@ -56,7 +56,7 @@ test("the unique identifier property of blog posts is named id", async () => {
   }
 });
 
-test.only("a valid note can be added", async () => {
+test("a valid note can be added", async () => {
   const newBlog = {
     title: "Tercer blog de prueba",
     author: "Autor 3",
@@ -81,6 +81,36 @@ test.only("a valid note can be added", async () => {
   assert(titles.includes("Tercer blog de prueba"));
 
   // console.log(response.body);
+});
+
+test.only("sets likes to 0 when not provided in POST request", async () => {
+  const newBlog = {
+    title: "Blog sin likes",
+    author: "Autorx",
+    url: "http://blog0.com",
+  };
+
+  await request(app)
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await request(app).get("/api/blogs");
+
+  // console.log(response.body[2]);
+  // console.log(response.body[2].likes);
+
+  const addedBlog = response.body.find(
+    (blog) => blog.title === "Blog sin likes"
+  );
+
+  assert.ok(addedBlog, "Blog not found in response");
+  assert.strictEqual(
+    addedBlog.likes,
+    0,
+    "Expected likes to be set to 0 when not provided"
+  );
 });
 
 after(async () => {
