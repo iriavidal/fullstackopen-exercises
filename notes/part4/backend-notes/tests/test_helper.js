@@ -1,6 +1,9 @@
 // Importa el modelo de Mongoose para las notas
 const Note = require("../models/note");
 
+// Importa el modelo de Mongoose para los usuarios
+const User = require("../models/user");
+
 // Define un conjunto inicial de notas para usar en las pruebas
 const initialNotes = [
   {
@@ -34,9 +37,18 @@ const notesInDb = async () => {
   return notes.map((note) => note.toJSON());
 };
 
+// Función asincrónica que devuelve todos los usuarios de la base de datos en formato JSON
+const usersInDb = async () => {
+  // Buscamos todos los usuarios en la base de datos
+  const users = await User.find({});
+  // Convertimos cada usuario a JSON utilizando el método definido en el modelo
+  return users.map((u) => u.toJSON());
+};
+
 // Exporta las utilidades para usar en los tests
 module.exports = {
-  initialNotes, // Datos iniciales para poblar DB
-  nonExistingId, // Función para ID inválido
-  notesInDb, // Función para obtener notas actualizadas
+  initialNotes,
+  nonExistingId,
+  notesInDb,
+  usersInDb,
 };
