@@ -26,6 +26,8 @@ const logger = require("./utils/logger");
 // Este router contiene las rutas relacionadas con los usuarios (crear usuario, obtener lista, etc.).
 const usersRouter = require("./controllers/users");
 
+const loginRouter = require("./controllers/login");
+
 // Importa Mongoose, que se usa para conectarse y trabajar con MongoDB
 const mongoose = require("mongoose");
 
@@ -65,6 +67,8 @@ app.use("/api/notes", notesRouter);
 // Monta el router de usuarios en la ruta "/api/users".
 // Todas las rutas definidas en usersRouter se accederán desde esta ruta base.
 app.use("/api/users", usersRouter);
+
+app.use("/api/login", loginRouter);
 
 // Middleware para manejar peticiones a endpoints desconocidos (404)
 app.use(middleware.unknownEndpoint);
