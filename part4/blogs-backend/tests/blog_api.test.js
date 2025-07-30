@@ -83,7 +83,7 @@ test("a valid note can be added", async () => {
   // console.log(response.body);
 });
 
-test.only("sets likes to 0 when not provided in POST request", async () => {
+test("sets likes to 0 when not provided in POST request", async () => {
   const newBlog = {
     title: "Blog sin likes",
     author: "Autorx",
@@ -111,6 +111,17 @@ test.only("sets likes to 0 when not provided in POST request", async () => {
     0,
     "Expected likes to be set to 0 when not provided"
   );
+});
+
+test.only("responds with 400 when title or url is missing", async () => {
+  const invalidBlogs = [
+    { author: "Autorx", url: "http://blog0.com" },
+    { title: "Blog sin likes", author: "Autorx" },
+  ];
+
+  for (const blog of invalidBlogs) {
+    await request(app).post("/api/blogs").send(blog).expect(400);
+  }
 });
 
 after(async () => {
