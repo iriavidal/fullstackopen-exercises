@@ -3,6 +3,9 @@ const notesRouter = require("express").Router();
 // Importamos el modelo Note para interactuar con la colección de notas en la base de datos
 const Note = require("../models/note");
 
+// Importamos el modelo de usuario para poder asociarlo con la nota
+const User = require("../models/user");
+
 // Ruta GET para obtener todas las notas
 notesRouter.get("/", async (request, response) => {
   // Buscamos todas las notas en la base de datos
@@ -30,15 +33,24 @@ notesRouter.post("/", async (request, response, next) => {
   // Obtenemos el contenido enviado en el cuerpo de la petición
   const body = request.body;
 
-  // Creamos una nueva instancia del modelo Note con el contenido y la importancia
+  // Buscamos al usuario correspondiente en la base de datos usando el ID recibido
+  const user = await User.findById(body.userId);
+
+  // Creamos una nueva instancia del modelo Note con el contenido recibido
   const note = new Note({
-    content: body.content,
+    content: body.content, // El contenido de la nota
     important: body.important || false, // Si no se indica "important", se asume false
+    user: user.id, // Asociamos la nota al usuario correspondiente
   });
 
   // Guardamos la nueva nota en la base de datos
   const savedNote = await note.save();
-  // Respondemos con la nota guardada
+
+  // Actualizamos la propiedad "notes" del usuario para incluir esta nueva nota
+  user.notes = user.notes.concat(savedNote._id);
+  await user.save(); // Guardamos el usuario actualizado
+
+  // Respondemos con la nota guardada y el código 201 (creado)
   response.status(201).json(savedNote);
 });
 
