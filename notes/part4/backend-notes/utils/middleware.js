@@ -35,6 +35,16 @@ const errorHandler = (error, request, response, next) => {
   else if (error.name === "ValidationError") {
     return response.status(400).json({ error: error.message });
   }
+  // Si el error es un error de MongoDB por clave duplicada (por ejemplo, username único repetido)
+  else if (
+    error.name === "MongoServerError" &&
+    error.message.includes("E11000 duplicate key error")
+  ) {
+    // Devuelve un error 400 con un mensaje personalizado para claves duplicadas
+    return response
+      .status(400)
+      .json({ error: "expected `username` to be unique" });
+  }
 
   // Si el error no es de los tipos anteriores, lo pasa al siguiente manejador de errores
   next(error);
