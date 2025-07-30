@@ -9,7 +9,9 @@ const User = require("../models/user");
 // Ruta GET para obtener todas las notas
 notesRouter.get("/", async (request, response) => {
   // Buscamos todas las notas en la base de datos
-  const notes = await Note.find({});
+  const notes = await Note.find({}) // Busca todas las notas en la base de datos
+    .populate("user", { username: 1, name: 1 }); // Por cada nota, reemplaza el campo 'user' (que contiene un ID) con un objeto que incluye solo los campos 'username' y 'name' del usuario
+
   // Respondemos con las notas encontradas en formato JSON
   response.json(notes);
 });
