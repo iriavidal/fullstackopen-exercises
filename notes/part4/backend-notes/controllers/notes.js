@@ -6,6 +6,16 @@ const Note = require("../models/note");
 // Importamos el modelo de usuario para poder asociarlo con la nota
 const User = require("../models/user");
 
+const jwt = require("jsonwebtoken");
+
+const getTokenFrom = (request) => {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.startsWith("Bearer ")) {
+    return authorization.replace("Bearer ", "");
+  }
+  return null;
+};
+
 // Ruta GET para obtener todas las notas
 notesRouter.get("/", async (request, response) => {
   // Buscamos todas las notas en la base de datos
@@ -35,8 +45,11 @@ notesRouter.post("/", async (request, response, next) => {
   // Obtenemos el contenido enviado en el cuerpo de la petición
   const body = request.body;
 
-  // Buscamos al usuario correspondiente en la base de datos usando el ID recibido
-  const user = await User.findById(body.userId);
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "token invalid" });
+  }
+  const user = await User.findById(decodedToken.id);
 
   // Creamos una nueva instancia del modelo Note con el contenido recibido
   const note = new Note({
