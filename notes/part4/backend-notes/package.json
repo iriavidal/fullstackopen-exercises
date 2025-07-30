@@ -14,6 +14,7 @@
     "deploy:full": "npm run build:ui && git add . && git commit -m 'UI updated and built' && git push"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
