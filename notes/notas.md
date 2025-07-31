@@ -1181,3 +1181,107 @@ npm run test -- -- --test-name-pattern="notes"
 ```
 
 También puedes usar partes del nombre, y funciona tanto con los títulos de `test()` como los de `describe()`.
+
+## 🔐 Problemas de la Autenticación Basada en Tokens
+
+> [Parte 4 -> d. Autenticación basada en token -> Problemas de la autenticación basada en Tokens](https://fullstackopen.com/es/part4/autenticacion_basada_en_token#problemas-de-la-autenticacion-basada-en-tokens)
+
+### 🧩 Característica Principal:
+
+- **Implementación sencilla**: Fácil de integrar en APIs y clientes (ej: React).
+- **Confianza ciega**: Una vez el cliente tiene un token, la API confía en él sin cuestionar.
+
+### ⚠️ Problema Central:
+
+**Revocación de acceso**:  
+¿Cómo invalidar un token si:
+
+- El token es robado?
+- El usuario debe perder sus derechos (ej: despido)?
+
+### 🔍 Soluciones Propuestas
+
+#### 1. Tiempo de Caducidad Corto (Token Expiración)
+
+- **Mecanismo**:  
+  Los tokens JWT incluyen un campo `exp` (expiration) que limita su validez temporal.
+- **Ventajas**:
+  - Seguridad mejorada: Reduce la ventana de oportunidad para uso malicioso.
+  - Implementación trivial: No requiere cambios en el backend (se gestiona en el payload del token).
+- **Desventajas**:
+  - Molestia al usuario: Debe iniciar sesión frecuentemente.
+  - No revocación inmediata: El token sigue siendo válido hasta su expiración.
+
+```javascript
+// Ejemplo de token JWT con expiración (1 hora)
+const token = jwt.sign(
+  { username: "john_doe" },
+  process.env.SECRET,
+  { expiresIn: "1h" } // ← Tiempo de expiración
+);
+```
+
+#### 2. Sesiones del Lado del Servidor (Server-Side Sessions)
+
+- **Mecanismo**:  
+  Almacenar información de cada token en la base de datos y validar su estado en cada petición.
+- **Flujo**:
+  1. Usuario inicia sesión → Servidor genera un **token aleatorio** (no JWT) y lo guarda en DB.
+  2. Servidor envía token al cliente (usualmente en una cookie).
+  3. En cada petición:
+     - Cliente envía token (cookie o header).
+     - Servidor verifica en DB si el token es válido/no revocado.
+  4. Si es válido, el servidor carga los datos del usuario desde la DB.
+- **Ventajas**:
+  - Revocación inmediata: Se puede invalidar cualquier token en cualquier momento.
+  - Control total: Registro centralizado de sesiones activas.
+- **Desventajas**:
+  - **Complejidad backend**: Requiere gestionar una "tabla de sesiones".
+  - **Rendimiento**: Cada petición implica una consulta a la base de datos.
+  - **Escalabilidad**: Puede convertirse en cuello de botella.
+
+#### 💡 Optimización: Usar almacenamiento de llave-valor (Redis)
+
+- **Por qué**:  
+  Bases de datos como Redis son ultra-rápidas para operaciones de lectura/escritura simples.
+- **Rendimiento**:  
+  Redis opera en memoria (RAM) → Respuestas en microsegundos.
+- **Limitaciones**:  
+  No soporta consultas complejas como MongoDB/SQL, pero es ideal para sesiones.
+
+### 🔄 Comparativa: Tokens vs Sesiones
+
+| Aspecto              | Tokens (JWT)                  | Sesiones (Server-Side)  |
+| -------------------- | ----------------------------- | ----------------------- |
+| **Revocación**       | Hasta expiración              | Inmediata               |
+| **Rendimiento**      | Verificación local (rápido)   | Consulta DB (más lento) |
+| **Almacenamiento**   | Cliente (localStorage/cookie) | Servidor (DB/Redis)     |
+| **Datos de usuario** | Incluidos en token (JWT)      | Almacenados en DB       |
+| **Complejidad**      | Baja                          | Media-Alta              |
+
+### 🍪 Uso de Cookies vs Headers
+
+- **Cookies**:
+  - Mecanismo tradicional para manejo de sesiones.
+  - Envío automático por el navegador en cada petición.
+  - Protegidas contra CSRF (si se configuran correctamente) pero vulnerables a XSS si se accede via JavaScript.
+- **Headers (Autorización)**:
+  - Cliente debe adjuntar manualmente `Authorization: Bearer <token>`.
+  - Más común en APIs RESTful.
+  - Vulnerable a XSS si el token se almacena en localStorage.
+    > **Nota de Seguridad**:  
+    > Para mitigar riesgos:
+    >
+    > - Cookies: Usar `HttpOnly` (inaccesible via JS) + `Secure` (solo HTTPS) + `SameSite`.
+    > - Tokens en cliente: Almacenar en memoria (no localStorage) si es posible.
+
+### ✅ Conclusión
+
+- **Usa tokens JWT** si:
+  - Priorizas simplicidad y rendimiento.
+  - No requieres revocación inmediata.
+  - La aplicación es de bajo riesgo (ej: no datos sensibles).
+- **Usa sesiones (con Redis)** si:
+  - Necesitas revocación inmediata.
+  - Puedes asumir un ligero costo de rendimiento.
+  - Manejas datos críticos (ej: bancarios, salud).
