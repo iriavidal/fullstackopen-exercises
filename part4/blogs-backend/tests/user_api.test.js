@@ -71,6 +71,54 @@ describe("when there is initially one user in db", () => {
 
     assert.strictEqual(usersAtEnd.length, usersAtStart.length);
   });
+
+  describe("User creation validations", () => {
+    test("creation fails if username is too short", async () => {
+      const newUser = {
+        username: "ab",
+        name: "Short User",
+        password: "validpassword",
+      };
+
+      const result = await api.post("/api/users").send(newUser).expect(400);
+
+      assert(result.body.error.includes("must be at least 3 characters"));
+    });
+
+    test("creation fails if password is too short", async () => {
+      const newUser = {
+        username: "validuser",
+        name: "Short Password",
+        password: "pw",
+      };
+
+      const result = await api.post("/api/users").send(newUser).expect(400);
+
+      assert(result.body.error.includes("must be at least 3 characters"));
+    });
+
+    test("creation fails if username is missing", async () => {
+      const newUser = {
+        name: "No Username",
+        password: "validpassword",
+      };
+
+      const result = await api.post("/api/users").send(newUser).expect(400);
+
+      assert(result.body.error.includes("username and password are required"));
+    });
+
+    test("creation fails if password is missing", async () => {
+      const newUser = {
+        username: "nouser",
+        name: "No Password",
+      };
+
+      const result = await api.post("/api/users").send(newUser).expect(400);
+
+      assert(result.body.error.includes("username and password are required"));
+    });
+  });
 });
 
 after(async () => {
