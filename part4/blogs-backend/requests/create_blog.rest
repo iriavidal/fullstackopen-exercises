@@ -30,3 +30,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imlya
     "author": "Iria Token",
     "url": "www.blog_con_token.com"
 }
+
+###
+
+POST http://localhost:3001/api/blogs 
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlyaWEiLCJpZCI6IjY4OGU0YmQ5MzRmYzY2NjM3MjMxN2Q5ZCIsImlhdCI6MTc1NDQ3MjA0MX0.LUoDkW6hEtQgNQyhsD6ITzv5Vu7EEZDDUxBvyQdbhAQ
+
+{
+    "title": "Blog prueba ejercicio 21",
+    "author": "Iria Token",
+    "url": "www.blog_con_token.com"
+}
