@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const request = require("supertest");
 const app = require("../app");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 const initialBlogs = [
   {
@@ -20,18 +21,39 @@ const initialBlogs = [
   },
 ];
 
+let token;
+
 beforeEach(async () => {
   await Blog.deleteMany({});
+  await User.deleteMany({});
+
+  const newUser = {
+    username: "testuser",
+    name: "Test User",
+    password: "password123",
+  };
+
+  await request(app).post("/api/users").send(newUser);
+
+  const loginResponse = await request(app).post("/api/login").send({
+    username: "testuser",
+    password: "password123",
+  });
+
+  token = loginResponse.body.token;
 
   for (let blog of initialBlogs) {
-    let blogObject = new Blog(blog);
-    await blogObject.save();
+    await request(app)
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
+      .send(blog);
   }
 });
 
 test("los blogs son devueltos como JSON y su cantidad es correcta", async () => {
   const response = await request(app)
     .get("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
     .expect(200)
     .expect("Content-Type", /application\/json/);
 
@@ -39,8 +61,9 @@ test("los blogs son devueltos como JSON y su cantidad es correcta", async () => 
 });
 
 test("the unique identifier property of blog posts is named id", async () => {
-  const response = await request(app).get("/api/blogs");
-
+  const response = await request(app)
+    .get("/api/blogs")
+    .set("Authorization", `Bearer ${token}`);
   const blogs = response.body;
 
   for (const blog of blogs) {
@@ -50,13 +73,10 @@ test("the unique identifier property of blog posts is named id", async () => {
       undefined,
       "Expected blog not to have property '_id'"
     );
-
-    console.log(blog.id);
-    console.log(blog._id);
   }
 });
 
-test("a valid note can be added", async () => {
+test("a valid blog can be added with a valid token", async () => {
   const newBlog = {
     title: "Tercer blog de prueba",
     author: "Autor 3",
@@ -66,21 +86,29 @@ test("a valid note can be added", async () => {
 
   await request(app)
     .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  const response = await request(app).get("/api/blogs");
-
+  const response = await request(app)
+    .get("/api/blogs")
+    .set("Authorization", `Bearer ${token}`);
   assert.strictEqual(response.body.length, initialBlogs.length + 1);
 
-  // console.log("response.body.length", response.body.length);
-  // console.log("initialBlogs.length + 1", initialBlogs.length + 1);
-
-  const titles = response.body.map((n) => n.title);
+  const titles = response.body.map((b) => b.title);
   assert(titles.includes("Tercer blog de prueba"));
+});
 
-  // console.log(response.body);
+test("adding a blog fails with 401 if token is not provided", async () => {
+  const newBlog = {
+    title: "Blog no autorizado",
+    author: "Intruso",
+    url: "http://notoken.com",
+    likes: 10,
+  };
+
+  await request(app).post("/api/blogs").send(newBlog).expect(401);
 });
 
 test("sets likes to 0 when not provided in POST request", async () => {
@@ -90,27 +118,14 @@ test("sets likes to 0 when not provided in POST request", async () => {
     url: "http://blog0.com",
   };
 
-  await request(app)
+  const response = await request(app)
     .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  const response = await request(app).get("/api/blogs");
-
-  // console.log(response.body[2]);
-  // console.log(response.body[2].likes);
-
-  const addedBlog = response.body.find(
-    (blog) => blog.title === "Blog sin likes"
-  );
-
-  assert.ok(addedBlog, "Blog not found in response");
-  assert.strictEqual(
-    addedBlog.likes,
-    0,
-    "Expected likes to be set to 0 when not provided"
-  );
+  assert.strictEqual(response.body.likes, 0);
 });
 
 test("responds with 400 when title or url is missing", async () => {
@@ -120,46 +135,50 @@ test("responds with 400 when title or url is missing", async () => {
   ];
 
   for (const blog of invalidBlogs) {
-    await request(app).post("/api/blogs").send(blog).expect(400);
+    await request(app)
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
+      .send(blog)
+      .expect(400);
   }
 });
 
-test("deletion of a note succeeds with status code 204 if id is valid", async () => {
-  const blogsAtStart = await request(app).get("/api/blogs");
+test("deletion of a blog succeeds with status code 204 if id is valid", async () => {
+  const blogsAtStart = await request(app)
+    .get("/api/blogs")
+    .set("Authorization", `Bearer ${token}`);
   const blogToDelete = blogsAtStart.body[0];
 
-  await request(app).delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+  await request(app)
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .set("Authorization", `Bearer ${token}`)
+    .expect(204);
 
-  const blogsAtEnd = await request(app).get("/api/blogs");
+  const blogsAtEnd = await request(app)
+    .get("/api/blogs")
+    .set("Authorization", `Bearer ${token}`);
   assert.strictEqual(blogsAtEnd.body.length, blogsAtStart.body.length - 1);
 
   const titles = blogsAtEnd.body.map((r) => r.title);
   assert(!titles.includes(blogToDelete.title));
-
-  // console.log("blogsAtStart", blogsAtStart.body);
-  // console.log("blogToDelete", blogToDelete);
-  // console.log("blogsAtEnd", blogsAtEnd.body);
 });
 
-test.only("updates blog likes successfully", async () => {
-  const blogsAtStart = await request(app).get("/api/blogs");
+test("updates blog likes successfully", async () => {
+  const blogsAtStart = await request(app)
+    .get("/api/blogs")
+    .set("Authorization", `Bearer ${token}`);
   const blogToUpdate = blogsAtStart.body[0];
 
   const updatedData = { likes: blogToUpdate.likes + 1 };
 
   const response = await request(app)
     .put(`/api/blogs/${blogToUpdate.id}`)
+    .set("Authorization", `Bearer ${token}`)
     .send(updatedData)
     .expect(200)
     .expect("Content-Type", /application\/json/);
 
   assert.strictEqual(response.body.likes, blogToUpdate.likes + 1);
-
-  /* const blogsAtEnd = await request(app).get("/api/blogs");
-
-  console.log("blogsAtStart", blogsAtStart.body);
-  console.log("blogToUpdate", blogToUpdate);
-  console.log("blogsAtEnd", blogsAtEnd.body); */
 });
 
 after(async () => {
