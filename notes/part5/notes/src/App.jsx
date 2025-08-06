@@ -88,6 +88,8 @@ const App = () => {
           setErrorMessage(null); // Borra el mensaje de error después de 5 segundos
         }, 5000);
 
+        console.log(error);
+
         // Elimina la nota del estado si ya no existe en el backend
         setNotes(notes.filter((n) => n.id !== id));
       });
@@ -109,6 +111,7 @@ const App = () => {
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
+      console.log(exception);
     }
   };
 
