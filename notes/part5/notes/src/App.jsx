@@ -31,6 +31,9 @@ const App = () => {
   // Estado para mostrar mensajes de error o notificación
   const [errorMessage, setErrorMessage] = useState("some error happened...");
 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   // useEffect se ejecuta cuando el componente se monta para cargar las notas desde el backend
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
@@ -88,11 +91,39 @@ const App = () => {
       });
   };
 
+  const handleLogin = (event) => {
+    event.preventDefault();
+    console.log("logging in with", username, password);
+  };
+
   return (
     <div>
       <h1>Notes</h1>
       {/* Muestra el componente de notificación con el mensaje de error */}
       <Notification message={errorMessage} />
+
+      <form onSubmit={handleLogin}>
+        <div>
+          username
+          <input
+            type="text"
+            value={username}
+            name="Username"
+            onChange={({ target }) => setUsername(target.value)}
+          />
+        </div>
+        <div>
+          password
+          <input
+            type="password"
+            value={password}
+            name="Password"
+            onChange={({ target }) => setPassword(target.value)}
+          />
+        </div>
+        <button type="submit">login</button>
+      </form>
+
       <div>
         {/* Botón para alternar entre mostrar todas las notas o solo las importantes */}
         <button onClick={() => setShowAll(!showAll)}>
