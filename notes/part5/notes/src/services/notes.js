@@ -2,6 +2,12 @@ import axios from "axios"; // Importa la librería axios para realizar solicitud
 
 const baseUrl = "/api/notes"; // Define la URL base del backend donde se almacenan las notas.
 
+let token = null;
+
+const setToken = (newToken) => {
+  token = `Bearer ${newToken}`;
+};
+
 // Función para obtener todas las notas desde el backend.
 const getAll = () => {
   const request = axios.get(baseUrl);
@@ -20,12 +26,13 @@ const getAll = () => {
 };
 
 // Función para crear una nueva nota en el servidor.
-const create = (newObject) => {
-  const request = axios.post(baseUrl, newObject);
-  // Realiza una solicitud POST enviando un nuevo objeto de nota al backend.
+const create = async (newObject) => {
+  const config = {
+    headers: { Authorization: token },
+  };
 
-  return request.then((response) => response.data);
-  // Retorna la respuesta con la nota creada.
+  const response = await axios.post(baseUrl, newObject, config);
+  return response.data;
 };
 
 // Función para actualizar una nota en el servidor con un nuevo contenido.
@@ -37,5 +44,5 @@ const update = (id, newObject) => {
   // Retorna la respuesta con la nota actualizada.
 };
 
-export default { getAll, create, update };
+export default { getAll, create, update, setToken };
 // Exporta las funciones para que puedan ser utilizadas en otros archivos.
