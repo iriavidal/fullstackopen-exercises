@@ -1,0 +1,44 @@
+POST http://localhost:3001/api/blogs 
+Content-Type: application/json
+
+{
+    "title": "Blog prueba 1",
+    "author": "Iria",
+    "url": "www.blog1.com"
+}
+
+###
+
+POST http://localhost:3001/api/blogs 
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlyaWEiLCJpZCI6IjY4OGU0YmQ5MzRmYzY2NjM3MjMxN2Q5ZCIsImlhdCI6MTc1NDQyNDk5Mn0.obwjd1d0rmPM7Q4GltUkkRuvnzSRLvuG21UJMmDoP58
+
+{
+    "title": "Blog prueba token",
+    "author": "Iria Token",
+    "url": "www.blog_con_token.com"
+}
+
+###
+
+POST http://localhost:3001/api/blogs 
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlyaWEiLCJpZCI6IjY4OGU0YmQ5MzRmYzY2NjM3MjMxN2Q5ZCIsImlhdCI6MTc1NDQ2ODY2MX0.9bTel1gEBo9j7CRumdqyHT2rr37nQBzFdXvWrR-VTOA
+
+{
+    "title": "Blog prueba ejercicio 20",
+    "author": "Iria Token",
+    "url": "www.blog_con_token.com"
+}
+
+###
+
+POST http://localhost:3001/api/blogs 
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlyaWEiLCJpZCI6IjY4OGU0YmQ5MzRmYzY2NjM3MjMxN2Q5ZCIsImlhdCI6MTc1NDQ3MjA0MX0.LUoDkW6hEtQgNQyhsD6ITzv5Vu7EEZDDUxBvyQdbhAQ
+
+{
+    "title": "Blog prueba ejercicio 21",
+    "author": "Iria Token",
+    "url": "www.blog_con_token.com"
+}
