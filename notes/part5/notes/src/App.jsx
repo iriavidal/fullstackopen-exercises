@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"; // Importa los hooks useState y use
 import Note from "./components/Note"; // Importa el componente Note
 import noteService from "./services/notes"; // Importa el servicio para manejar notas
 import Notification from "./components/Notification"; // Importa el componente de notificaciones
+import loginService from "./services/login";
 
 // Componente Footer: muestra un pie de página estilizado
 const Footer = () => {
@@ -33,6 +34,7 @@ const App = () => {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [user, setUser] = useState(null);
 
   // useEffect se ejecuta cuando el componente se monta para cargar las notas desde el backend
   useEffect(() => {
@@ -91,10 +93,55 @@ const App = () => {
       });
   };
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    console.log("logging in with", username, password);
+
+    try {
+      const user = await loginService.login({
+        username,
+        password,
+      });
+      setUser(user);
+      setUsername("");
+      setPassword("");
+    } catch (exception) {
+      setErrorMessage("Wrong credentials");
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
   };
+
+  const loginForm = () => (
+    <form onSubmit={handleLogin}>
+      <div>
+        username
+        <input
+          type="text"
+          value={username}
+          name="Username"
+          onChange={({ target }) => setUsername(target.value)}
+        />
+      </div>
+      <div>
+        password
+        <input
+          type="password"
+          value={password}
+          name="Password"
+          onChange={({ target }) => setPassword(target.value)}
+        />
+      </div>
+      <button type="submit">login</button>
+    </form>
+  );
+
+  const noteForm = () => (
+    <form onSubmit={addNote}>
+      <input value={newNote} onChange={handleNoteChange} />
+      <button type="submit">save</button>
+    </form>
+  );
 
   return (
     <div>
@@ -102,27 +149,14 @@ const App = () => {
       {/* Muestra el componente de notificación con el mensaje de error */}
       <Notification message={errorMessage} />
 
-      <form onSubmit={handleLogin}>
+      {user === null ? (
+        loginForm()
+      ) : (
         <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
+          <p>{user.name} logged-in</p>
+          {noteForm()}
         </div>
-        <div>
-          password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
+      )}
 
       <div>
         {/* Botón para alternar entre mostrar todas las notas o solo las importantes */}
@@ -140,11 +174,6 @@ const App = () => {
           />
         ))}
       </ul>
-      <form onSubmit={addNote}>
-        {/* Campo de entrada y botón para agregar una nueva nota */}
-        <input value={newNote} onChange={handleNoteChange} />
-        <button type="submit">save</button>
-      </form>
       {/* Muestra el pie de página */}
       <Footer></Footer>
     </div>
