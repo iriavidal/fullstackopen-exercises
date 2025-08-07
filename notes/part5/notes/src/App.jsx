@@ -43,6 +43,15 @@ const App = () => {
     });
   }, []); // El array vacío indica que solo se ejecuta una vez al montar el componente
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem("loggedNoteappUser");
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      noteService.setToken(user.token);
+    }
+  }, []);
+
   // Función para agregar una nueva nota
   const addNote = (event) => {
     event.preventDefault(); // Evita la recarga de la página
@@ -103,6 +112,8 @@ const App = () => {
         username,
         password,
       });
+
+      window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
 
       noteService.setToken(user.token);
       setUser(user);
