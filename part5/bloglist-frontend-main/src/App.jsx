@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
+import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -9,6 +10,8 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -25,9 +28,17 @@ const App = () => {
     }
   }, []);
 
+  const showNotification = (text, type = "success") => {
+    setMessage(text);
+    setMessageType(type);
+    setTimeout(() => {
+      setMessage(null);
+      setMessageType(null);
+    }, 5000);
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
-
     try {
       const user = await loginService.login({
         username,
@@ -40,12 +51,10 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
-    } catch (exception) {
-      alert("Wrong credentials", exception);
-      /* setErrorMessage("Wrong credentials");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000); */
+
+      showNotification(`Welcome ${user.name}`, "success");
+    } catch (error) {
+      showNotification("Wrong credentials", "error");
     }
   };
 
@@ -53,17 +62,18 @@ const App = () => {
     window.localStorage.removeItem("loggedBlogappUser");
     setUser(null);
     blogService.setToken(null);
+    showNotification("Logged out", "success");
   };
 
   const handleCreate = async (event) => {
     event.preventDefault();
-
     try {
       const createdBlog = await blogService.create(newBlog);
       setBlogs(blogs.concat(createdBlog));
       setNewBlog({ title: "", author: "", url: "" });
-    } catch (exception) {
-      alert("Error creating blog", exception);
+      showNotification(`Blog "${createdBlog.title}" added`, "success");
+    } catch (error) {
+      showNotification("Error creating blog", "error");
     }
   };
 
@@ -96,6 +106,8 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={message} type={messageType} />
+
       {user === null ? (
         loginForm()
       ) : (
