@@ -8,6 +8,7 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
+  const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
 
   useEffect(() => {
     if (user) {
@@ -54,6 +55,18 @@ const App = () => {
     blogService.setToken(null);
   };
 
+  const handleCreate = async (event) => {
+    event.preventDefault();
+
+    try {
+      const createdBlog = await blogService.create(newBlog);
+      setBlogs(blogs.concat(createdBlog));
+      setNewBlog({ title: "", author: "", url: "" });
+    } catch (exception) {
+      alert("Error creating blog", exception);
+    }
+  };
+
   const loginForm = () => (
     <div>
       <h2>Log in to application</h2>
@@ -89,9 +102,45 @@ const App = () => {
         <div>
           <h2>blogs</h2>
           <h3>{user.name} logged in</h3>
+          <form onSubmit={handleCreate}>
+            <label htmlFor="title">Title: </label>
+            <input
+              type="text"
+              value={newBlog.title}
+              name="Title"
+              onChange={({ target }) =>
+                setNewBlog({ ...newBlog, title: target.value })
+              }
+            />
+            <br />
+            <label htmlFor="author">Author: </label>
+            <input
+              type="text"
+              value={newBlog.author}
+              name="Author"
+              onChange={({ target }) =>
+                setNewBlog({ ...newBlog, author: target.value })
+              }
+            />
+            <br />
+            <label htmlFor="url">URL: </label>
+            <input
+              type="text"
+              value={newBlog.url}
+              name="URL"
+              onChange={({ target }) =>
+                setNewBlog({ ...newBlog, url: target.value })
+              }
+            />
+            <br />
+            <button type="submit">create</button>
+          </form>
+          <hr />
+
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}
+          <hr />
           <button onClick={handleLogout}>log-out</button>
         </div>
       )}
