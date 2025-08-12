@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 const Note = ({ note, toggleImportance }) => {
   // Componente funcional que recibe un objeto `note` y una función `toggleImportance` como props.
 

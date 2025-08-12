@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 const Notification = ({ message }) => {
   // Componente funcional que recibe `message` como prop.
 

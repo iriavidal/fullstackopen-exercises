@@ -1,51 +1,59 @@
-import { useState, useEffect } from "react"; // Importa los hooks useState y useEffect de React
-import Note from "./components/Note"; // Importa el componente Note
-import noteService from "./services/notes"; // Importa el servicio para manejar notas
-import Notification from "./components/Notification"; // Importa el componente de notificaciones
+/* eslint-disable no-unused-vars */
+// Desactiva la regla de ESLint que advierte sobre variables importadas o declaradas pero no usadas.
+
+import { useState, useEffect } from "react";
+// Importa los hooks de React: useState para manejar estados y useEffect para ejecutar efectos secundarios.
+
+import Note from "./components/Note";
+// Importa el componente Note, que probablemente renderiza una nota individual.
+
+import Notification from "./components/Notification";
+// Importa el componente que muestra mensajes de error o de información.
+
+import noteService from "./services/notes";
+// Importa el servicio que maneja las llamadas HTTP relacionadas con las notas.
+
 import loginService from "./services/login";
+// Importa el servicio que maneja las llamadas HTTP relacionadas con el login.
+
 import LoginForm from "./components/LoginForm";
+// Importa el formulario de login.
 
-// Componente Footer: muestra un pie de página estilizado
-const Footer = () => {
-  const footerStyle = {
-    color: "green",
-    fontStyle: "italic",
-    fontSize: 16,
-  };
-  return (
-    <div style={footerStyle}>
-      <br />
-      <em>
-        Note app, Department of Computer Science, University of Helsinki 2024
-      </em>
-    </div>
-  );
-};
+import Togglable from "./components/Togglable";
+// Importa el componente que puede mostrar/ocultar su contenido.
 
-// Componente principal de la aplicación
+import NoteForm from "./components/NoteForm";
+// Importa el formulario para crear una nueva nota.
+
 const App = () => {
-  // Estado para almacenar la lista de notas
-  const [notes, setNotes] = useState([]); // Se inicia con un array vacío porque se van a guardar varias cosas, si se guardara solo una sería null
-  // Estado para almacenar el contenido de una nueva nota
+  // Declara el componente principal de la aplicación.
+
+  const [notes, setNotes] = useState([]);
+  // Estado para almacenar todas las notas.
+
   const [newNote, setNewNote] = useState("");
-  // Estado para alternar entre mostrar todas las notas o solo las importantes
+  // Estado para el valor del input de nueva nota.
+
   const [showAll, setShowAll] = useState(true);
-  // Estado para mostrar mensajes de error o notificación
-  const [errorMessage, setErrorMessage] = useState("some error happened...");
+  // Estado para determinar si se muestran todas las notas o solo las importantes.
+
+  const [errorMessage, setErrorMessage] = useState(null);
+  // Estado para mensajes de error o información.
 
   const [username, setUsername] = useState("");
+  // Estado para el valor del input de nombre de usuario.
+
   const [password, setPassword] = useState("");
+  // Estado para el valor del input de contraseña.
+
   const [user, setUser] = useState(null);
+  // Estado para el usuario logueado.
+
   const [loginVisible, setLoginVisible] = useState(false);
-
-  // useEffect se ejecuta cuando el componente se monta para cargar las notas desde el backend
-  useEffect(() => {
-    noteService.getAll().then((initialNotes) => {
-      setNotes(initialNotes); // Almacena las notas en el estado
-    });
-  }, []); // El array vacío indica que solo se ejecuta una vez al montar el componente
+  // Estado para controlar si el formulario de login se muestra o no.
 
   useEffect(() => {
+    // Efecto que se ejecuta al montar el componente, para recuperar datos del usuario desde localStorage.
     const loggedUserJSON = window.localStorage.getItem("loggedNoteappUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
@@ -54,59 +62,55 @@ const App = () => {
     }
   }, []);
 
-  // Función para agregar una nueva nota
+  useEffect(() => {
+    // Efecto que se ejecuta al montar el componente para cargar todas las notas desde el servidor.
+    noteService.getAll().then((initialNotes) => {
+      setNotes(initialNotes);
+    });
+  }, []);
+
   const addNote = (event) => {
-    event.preventDefault(); // Evita la recarga de la página
+    // Función para añadir una nueva nota.
+    event.preventDefault();
     const noteObject = {
-      content: newNote, // Usa el valor actual del input
-      important: Math.random() > 0.5, // Asigna importancia aleatoria
-      id: String(notes.length + 1), // Genera un ID basado en la longitud del array
+      content: newNote,
+      important: Math.random() > 0.5, // Asigna importancia aleatoria.
     };
 
-    // Envía la nueva nota al backend y actualiza el estado
     noteService.create(noteObject).then((returnedNote) => {
-      setNotes(notes.concat(returnedNote)); // Agrega la nueva nota a la lista
-      setNewNote(""); // Limpia el campo de entrada
+      // Envía la nota al servidor y actualiza el estado con la respuesta.
+      setNotes(notes.concat(returnedNote));
+      setNewNote("");
     });
   };
 
-  // Maneja los cambios en el input de nueva nota
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value);
-  };
-
-  // Filtra las notas según la opción seleccionada
-  const notesToShow = showAll ? notes : notes.filter((note) => note.important);
-
-  // Función para alternar la importancia de una nota
   const toggleImportanceOf = (id) => {
-    const note = notes.find((n) => n.id === id); // Busca la nota por ID
-    const changedNote = { ...note, important: !note.important }; // Crea una copia con la propiedad "important" cambiada
+    // Función para alternar la importancia de una nota específica.
+    const note = notes.find((n) => n.id === id);
+    const changedNote = { ...note, important: !note.important };
 
-    // Envía la actualización al backend
     noteService
       .update(id, changedNote)
       .then((returnedNote) => {
-        // Reemplaza la nota actualizada en la lista
         setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)));
       })
       .catch((error) => {
-        // Manejo de errores si la nota ya no existe en el servidor
         setErrorMessage(
           `Note '${note.content}' was already removed from server`
         );
         setTimeout(() => {
-          setErrorMessage(null); // Borra el mensaje de error después de 5 segundos
+          setErrorMessage(null);
         }, 5000);
-
-        console.log(error);
-
-        // Elimina la nota del estado si ya no existe en el backend
-        setNotes(notes.filter((n) => n.id !== id));
       });
   };
 
+  const handleNoteChange = (event) => {
+    // Actualiza el estado con el contenido del input de nueva nota.
+    setNewNote(event.target.value);
+  };
+
   const handleLogin = async (event) => {
+    // Maneja el login del usuario.
     event.preventDefault();
 
     try {
@@ -114,23 +118,25 @@ const App = () => {
         username,
         password,
       });
-
       window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
-
+      // Guarda el usuario logueado en localStorage.
       noteService.setToken(user.token);
       setUser(user);
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setErrorMessage("Wrong credentials");
+      setErrorMessage("wrong credentials");
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
-      console.log(exception);
     }
   };
 
+  const notesToShow = showAll ? notes : notes.filter((note) => note.important);
+  // Determina si se muestran todas las notas o solo las importantes.
+
   const loginForm = () => {
+    // Función que devuelve el formulario de login con mostrar/ocultar controlado.
     const hideWhenVisible = { display: loginVisible ? "none" : "" };
     const showWhenVisible = { display: loginVisible ? "" : "none" };
 
@@ -153,48 +159,45 @@ const App = () => {
     );
   };
 
-  const noteForm = () => (
-    <form onSubmit={addNote}>
-      <input value={newNote} onChange={handleNoteChange} />
-      <button type="submit">save</button>
-    </form>
-  );
-
   return (
     <div>
       <h1>Notes</h1>
-      {/* Muestra el componente de notificación con el mensaje de error */}
       <Notification message={errorMessage} />
 
-      {user === null ? (
-        loginForm()
-      ) : (
+      {!user && loginForm()}
+      {/* Si no hay usuario logueado, muestra el formulario de login. */}
+
+      {user && (
         <div>
-          <p>{user.name} logged-in</p>
-          {noteForm()}
+          <p>{user.name} logged in</p>
+          <Togglable buttonLabel="new note">
+            <NoteForm
+              onSubmit={addNote}
+              value={newNote}
+              handleChange={handleNoteChange}
+            />
+          </Togglable>
         </div>
       )}
 
       <div>
-        {/* Botón para alternar entre mostrar todas las notas o solo las importantes */}
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? "important" : "all"}
         </button>
       </div>
+
       <ul>
-        {/* Renderiza la lista de notas filtradas */}
         {notesToShow.map((note) => (
           <Note
-            key={note.id} // Clave única para cada nota
-            note={note} // Pasa la nota como prop al componente Note
-            toggleImportance={() => toggleImportanceOf(note.id)} // Pasa la función para cambiar importancia
+            key={note.id}
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)}
           />
         ))}
       </ul>
-      {/* Muestra el pie de página */}
-      <Footer></Footer>
     </div>
   );
 };
 
-export default App; // Exporta el componente principal
+export default App;
+// Exporta el componente principal para poder usarlo en otros archivos.
