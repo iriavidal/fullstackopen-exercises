@@ -1285,3 +1285,130 @@ const token = jwt.sign(
   - Necesitas revocación inmediata.
   - Puedes asumir un ligero costo de rendimiento.
   - Manejas datos críticos (ej: bancarios, salud).
+
+## 📌 Uso de ref y useImperativeHandle para controlar un componente desde fuera
+
+> [Parte 5 -> b. props.children y proptypes -> Referencias a componentes con ref](https://fullstackopen.com/es/part5/props_children_y_proptypes#referencias-a-componentes-con-ref)
+
+### 1️⃣ Contexto
+
+Queremos que, después de crear una nueva nota, el formulario para crearla se **oculte automáticamente**.
+El problema es que la visibilidad se controla con un estado interno (`visible`) dentro de `Togglable`, por lo que el componente padre (`App`) no puede modificarlo directamente.
+
+Mover el estado al padre sería posible, pero **no queremos** porque queremos que `Togglable` siga manejando su propio estado interno.
+
+La solución: **usar una referencia** (`ref`) para poder llamar a funciones internas de `Togglable` desde `App`.
+
+### 2️⃣ Pasos para implementarlo
+
+**En `App`:**
+
+1. Crear una referencia con `useRef()`.
+
+2. Asignarla al componente hijo (`Togglable`).
+
+3. Usar esa referencia para llamar a funciones internas del hijo.
+
+```javascript
+import { useState, useEffect, useRef } from "react";
+
+const App = () => {
+  const noteFormRef = useRef();
+
+  const noteForm = () => (
+    <Togglable buttonLabel="new note" ref={noteFormRef}>
+      <NoteForm createNote={addNote} />
+    </Togglable>
+  );
+
+  const addNote = (noteObject) => {
+    // Llamamos a la función interna del hijo para ocultar el formulario
+    noteFormRef.current.toggleVisibility();
+    noteService.create(noteObject).then((returnedNote) => {
+      setNotes(notes.concat(returnedNote));
+    });
+  };
+};
+```
+
+**En `Togglable`:**
+
+1. Envolver el componente en `forwardRef` para poder recibir la ref del padre.
+
+2. Usar `useImperativeHandle` para decidir qué funciones o propiedades internas queremos exponer al padre.
+
+```javascript
+import { useState, forwardRef, useImperativeHandle } from "react";
+
+const Togglable = forwardRef((props, refs) => {
+  const [visible, setVisible] = useState(false);
+
+  const hideWhenVisible = { display: visible ? "none" : "" };
+  const showWhenVisible = { display: visible ? "" : "none" };
+
+  const toggleVisibility = () => {
+    setVisible(!visible);
+  };
+
+  // Solo exponemos toggleVisibility al padre
+  useImperativeHandle(refs, () => {
+    return {
+      toggleVisibility,
+    };
+  });
+
+  return (
+    <div>
+      <div style={hideWhenVisible}>
+        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+      </div>
+      <div style={showWhenVisible}>
+        {props.children}
+        <button onClick={toggleVisibility}>cancel</button>
+      </div>
+    </div>
+  );
+});
+
+export default Togglable;
+```
+
+### 3️⃣ Resumen de funciones usadas
+
+- `useRef` → Crea una referencia persistente entre renderizados.
+
+- `forwardRef` → Permite que un componente hijo reciba la ref del padre.
+
+- `useImperativeHandle` → Define qué funciones/valores internos del hijo se pueden usar desde el padre.
+
+### 4️⃣ Diagrama ASCII del flujo
+
+```pgsql
++-----------+         ref         +-------------------+
+|   App     |-------------------->|   Togglable       |
+| (Padre)   |                     |  (Hijo)           |
+|           | noteFormRef.current |                   |
++-----------+ toggleVisibility()  +-------------------+
+       |                                    |
+       |                                    v
+       |                            Cambia estado visible
+       |                                    |
+       +------------------------------------+
+
+```
+
+O, de forma más esquemática:
+
+```java
+App (Padre)
+|
+| useRef() --> noteFormRef
+|
+v
+Togglable (Hijo con forwardRef)
+|
+| useImperativeHandle() expone toggleVisibility()
+|
+v
+Estado interno (visible / no visible)
+```
