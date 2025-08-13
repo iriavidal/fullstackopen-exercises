@@ -1,29 +1,32 @@
-/* eslint-disable react/prop-types */ // Desactiva la regla de ESLint que obliga a definir propTypes para los props
+/* eslint-disable react/prop-types */
+import { useState } from "react";
 
-// Definición del componente funcional "NoteForm"
-// Recibe props desestructuradas:
-// - onSubmit: función que se ejecuta al enviar el formulario
-// - handleChange: función que se ejecuta cuando cambia el valor del input
-// - value: valor actual del input (estado controlado)
-const NoteForm = ({ onSubmit, handleChange, value }) => {
+const NoteForm = ({ createNote }) => {
+  const [newNote, setNewNote] = useState("");
+
+  const addNote = (event) => {
+    event.preventDefault();
+    createNote({
+      content: newNote,
+      important: true,
+    });
+
+    setNewNote("");
+  };
+
   return (
     <div>
-      {/* Título del formulario */}
       <h2>Create a new note</h2>
 
-      {/* Formulario: se ejecuta la función onSubmit al enviarlo */}
-      <form onSubmit={onSubmit}>
-        {/* Campo de texto controlado para escribir la nota
-            - value usa el estado que viene en 'value'
-            - onChange llama a handleChange para actualizar el estado */}
-        <input value={value} onChange={handleChange} />
-
-        {/* Botón para enviar el formulario */}
+      <form onSubmit={addNote}>
+        <input
+          value={newNote}
+          onChange={(event) => setNewNote(event.target.value)}
+        />
         <button type="submit">save</button>
       </form>
     </div>
   );
 };
 
-// Exporta el componente para que pueda ser usado en otros archivos
 export default NoteForm;
