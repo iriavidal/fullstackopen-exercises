@@ -3,6 +3,7 @@ import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import NoteForm from "./components/NoteForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -12,6 +13,7 @@ const App = () => {
   const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState(null);
+  const [loginVisible, setLoginVisible] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -104,6 +106,9 @@ const App = () => {
     </div>
   );
 
+  const hideWhenVisible = { display: loginVisible ? "none" : "" };
+  const showWhenVisible = { display: loginVisible ? "" : "none" };
+
   return (
     <div>
       <Notification message={message} type={messageType} />
@@ -114,39 +119,17 @@ const App = () => {
         <div>
           <h2>blogs</h2>
           <h3>{user.name} logged in</h3>
-          <form onSubmit={handleCreate}>
-            <label htmlFor="title">Title: </label>
-            <input
-              type="text"
-              value={newBlog.title}
-              name="Title"
-              onChange={({ target }) =>
-                setNewBlog({ ...newBlog, title: target.value })
-              }
+          <div style={hideWhenVisible}>
+            <button onClick={() => setLoginVisible(true)}>new note</button>
+          </div>
+          <div style={showWhenVisible}>
+            <NoteForm
+              handleCreate={handleCreate}
+              newBlog={newBlog}
+              setNewBlog={setNewBlog}
             />
-            <br />
-            <label htmlFor="author">Author: </label>
-            <input
-              type="text"
-              value={newBlog.author}
-              name="Author"
-              onChange={({ target }) =>
-                setNewBlog({ ...newBlog, author: target.value })
-              }
-            />
-            <br />
-            <label htmlFor="url">URL: </label>
-            <input
-              type="text"
-              value={newBlog.url}
-              name="URL"
-              onChange={({ target }) =>
-                setNewBlog({ ...newBlog, url: target.value })
-              }
-            />
-            <br />
-            <button type="submit">create</button>
-          </form>
+            <button onClick={() => setLoginVisible(false)}>cancel</button>
+          </div>
           <hr />
 
           {blogs.map((blog) => (
