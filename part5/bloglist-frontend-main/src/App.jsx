@@ -117,6 +117,18 @@ const App = () => {
     }
   };
 
+  const handleRemove = async (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      try {
+        await blogService.remove(blog.id);
+        setBlogs(blogs.filter((b) => b.id !== blog.id));
+        showNotification(`Blog ${blog.title} removed`, "success");
+      } catch (error) {
+        showNotification("Error removing blog", "error");
+      }
+    }
+  };
+
   return (
     <div>
       <Notification message={message} type={messageType} />
@@ -141,7 +153,13 @@ const App = () => {
           {[...blogs]
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
-              <Blog key={blog.id} blog={blog} handleLike={handleLike} />
+              <Blog
+                key={blog.id}
+                blog={blog}
+                user={user}
+                handleLike={handleLike}
+                handleRemove={handleRemove}
+              />
             ))}
           <hr />
           <button onClick={handleLogout}>log-out</button>
