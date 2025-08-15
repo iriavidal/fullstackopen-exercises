@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */ // Desactiva la regla de ESLint que exige propTypes
 import PropTypes from "prop-types";
 
 // Definición del componente funcional "LoginForm".
