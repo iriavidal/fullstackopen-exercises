@@ -3,6 +3,8 @@ import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import NoteForm from "./components/NoteForm";
+import Togglable from "./components/Togglable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -104,6 +106,29 @@ const App = () => {
     </div>
   );
 
+  const handleLike = async (blog) => {
+    try {
+      const returned = await blogService.update(blog.id, {
+        likes: blog.likes + 1,
+      });
+      setBlogs((prev) => prev.map((b) => (b.id === blog.id ? returned : b)));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleRemove = async (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      try {
+        await blogService.remove(blog.id);
+        setBlogs(blogs.filter((b) => b.id !== blog.id));
+        showNotification(`Blog ${blog.title} removed`, "success");
+      } catch (error) {
+        showNotification("Error removing blog", "error");
+      }
+    }
+  };
+
   return (
     <div>
       <Notification message={message} type={messageType} />
@@ -114,44 +139,28 @@ const App = () => {
         <div>
           <h2>blogs</h2>
           <h3>{user.name} logged in</h3>
-          <form onSubmit={handleCreate}>
-            <label htmlFor="title">Title: </label>
-            <input
-              type="text"
-              value={newBlog.title}
-              name="Title"
-              onChange={({ target }) =>
-                setNewBlog({ ...newBlog, title: target.value })
-              }
+
+          <Togglable buttonLabel="new blog">
+            <NoteForm
+              handleCreate={handleCreate}
+              newBlog={newBlog}
+              setNewBlog={setNewBlog}
             />
-            <br />
-            <label htmlFor="author">Author: </label>
-            <input
-              type="text"
-              value={newBlog.author}
-              name="Author"
-              onChange={({ target }) =>
-                setNewBlog({ ...newBlog, author: target.value })
-              }
-            />
-            <br />
-            <label htmlFor="url">URL: </label>
-            <input
-              type="text"
-              value={newBlog.url}
-              name="URL"
-              onChange={({ target }) =>
-                setNewBlog({ ...newBlog, url: target.value })
-              }
-            />
-            <br />
-            <button type="submit">create</button>
-          </form>
+          </Togglable>
+
           <hr />
 
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
-          ))}
+          {[...blogs]
+            .sort((a, b) => b.likes - a.likes)
+            .map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                user={user}
+                handleLike={handleLike}
+                handleRemove={handleRemove}
+              />
+            ))}
           <hr />
           <button onClick={handleLogout}>log-out</button>
         </div>
