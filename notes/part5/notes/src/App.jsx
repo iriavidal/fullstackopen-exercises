@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from "react";
 import Note from "./components/Note";
 import Notification from "./components/Notification";
-import Footer from "./components/Footer";
 import noteService from "./services/notes";
 import loginService from "./services/login";
 import LoginForm from "./components/LoginForm";
@@ -136,7 +135,6 @@ const App = () => {
           />
         ))}
       </ul>
-      <Footer />
     </div>
   );
 };
