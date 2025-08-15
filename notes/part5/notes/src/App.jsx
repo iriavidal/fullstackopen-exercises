@@ -100,6 +100,13 @@ const App = () => {
             handlePasswordChange={({ target }) => setPassword(target.value)}
             handleSubmit={handleLogin}
           />
+          {/* <LoginForm
+            handleSubmit="no es una función"
+            handleUsernameChange={() => {}}
+            handlePasswordChange={() => {}}
+            username="pepe"
+            password="123"
+          /> */}
           <button onClick={() => setLoginVisible(false)}>cancel</button>
         </div>
       </div>
