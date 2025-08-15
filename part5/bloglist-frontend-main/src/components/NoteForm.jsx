@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 const NoteForm = ({ handleCreate, newBlog, setNewBlog }) => {
   return (
     <form onSubmit={handleCreate}>
@@ -32,6 +34,16 @@ const NoteForm = ({ handleCreate, newBlog, setNewBlog }) => {
       <button type="submit">create</button>
     </form>
   );
+};
+
+NoteForm.propTypes = {
+  handleCreate: PropTypes.func.isRequired,
+  newBlog: PropTypes.shape({
+    title: PropTypes.string,
+    author: PropTypes.string,
+    url: PropTypes.string,
+  }).isRequired,
+  setNewBlog: PropTypes.func.isRequired,
 };
 
 export default NoteForm;
