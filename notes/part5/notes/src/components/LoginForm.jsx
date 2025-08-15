@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */ // Desactiva la regla de ESLint que exige propTypes
+import PropTypes from "prop-types";
 
 // Definición del componente funcional "LoginForm".
 // Se usan props desestructuradas para recibir las funciones y valores necesarios desde el componente padre.
@@ -43,6 +44,14 @@ const LoginForm = ({
       </form>
     </div>
   );
+};
+
+LoginForm.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  handleUsernameChange: PropTypes.func.isRequired,
+  handlePasswordChange: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired,
 };
 
 // Exporta el componente por defecto para poder importarlo desde otros archivos
