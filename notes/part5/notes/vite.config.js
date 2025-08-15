@@ -13,6 +13,12 @@ export default defineConfig({
       },
     },
   },
+
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: "./testSetup.js",
+  },
 });
 
 // Recordar primero iniciar el back y luego el front para que no de error el proxy
