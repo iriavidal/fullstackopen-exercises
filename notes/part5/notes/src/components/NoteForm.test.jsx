@@ -9,9 +9,10 @@ test("<NoteForm /> updates parent state and calls onSubmit", async () => {
   const createNote = vi.fn(); // 'vi.fn()' crea una función mock/espía para registrar llamadas y argumentos
   const user = userEvent.setup(); // prepara un "usuario" que simula interacciones con temporización realista
 
-  render(<NoteForm createNote={createNote} />); // renderiza el formulario, inyectando la prop 'createNote' (callback) mockeada
+  const { container } = render(<NoteForm createNote={createNote} />); // renderiza el formulario y guarda el nodo raíz del DOM de prueba
 
-  const input = screen.getByRole("textbox"); // localiza el control de texto (input type="text" o textarea) por su rol accesible
+  //const input = screen.getByPlaceholderText("write note content here");
+  const input = container.querySelector("#note-input"); // selecciona el input directamente por su id "note-input"
   const sendButton = screen.getByText("save"); // localiza el botón por su texto visible "save"
 
   await user.type(input, "testing a form..."); // simula que el usuario escribe en el input la cadena indicada
