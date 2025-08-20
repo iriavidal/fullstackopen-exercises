@@ -1412,3 +1412,30 @@ Togglable (Hijo con forwardRef)
 v
 Estado interno (visible / no visible)
 ```
+
+## Tipos de pruebas en Frontend
+
+> [Parte 5 -> c. Probando aplicaciones React -> Pruebas de integración del Frontend](https://fullstackopen.com/es/part5/probando_aplicaciones_react#pruebas-de-integracion-del-frontend)
+
+### Pruebas unitarias
+
+- **Qué son:** se centran en probar componentes o funciones **individuales** de forma aislada.
+- **Para qué sirven:** comprobar que cada pieza de código funciona correctamente por sí sola.
+- **Limitación:** aunque tengas muchas pruebas unitarias, **no garantizan que toda la aplicación funcione en conjunto**.
+
+### Pruebas de integración
+
+- **Qué son:** verifican que **varios componentes o partes de la aplicación funcionen bien juntos**.
+- **Ejemplo:** comprobar que un formulario actualiza la lista de blogs correctamente al enviar datos al backend.
+- **Dificultad:** son más complejas que las unitarias, porque a menudo hay que simular datos del servidor o interacciones entre componentes.
+- **Objetivo:** detectar errores que solo aparecen cuando las partes del sistema **interactúan entre sí**, algo que las pruebas unitarias no capturan.
+
+### Pruebas de instantáneas (snapshot testing)
+
+- **Qué son:** comparan automáticamente el **HTML generado por un componente** con la versión anterior.
+- **Cómo funcionan:**
+  1. Se toma una "instantánea" del HTML actual del componente.
+  2. Si el HTML cambia, la prueba alerta sobre la diferencia.
+  3. El desarrollador decide si el cambio era **intencionado o un error**.
+- **Para qué sirven:** detectar **cambios inesperados en la interfaz** que podrían ser errores accidentales.
+- **Ventaja:** no necesitas escribir muchas pruebas manuales; las instantáneas capturan cambios automáticamente.
