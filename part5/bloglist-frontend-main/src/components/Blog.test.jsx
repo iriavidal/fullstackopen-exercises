@@ -37,4 +37,19 @@ describe("<Blog />", () => {
     expect(screen.getByText("http://example.com")).toBeDefined();
     expect(screen.getByText("likes 10")).toBeDefined();
   });
+
+  test("calls event handler twice if like button is clicked twice", async () => {
+    const mockHandler = vi.fn();
+    render(<Blog blog={blog} handleLike={mockHandler} user={blog.user} />);
+    const userSetup = userEvent.setup();
+
+    const viewButton = screen.getByText("view");
+    await userSetup.click(viewButton);
+
+    const likeButton = screen.getByText("like");
+    await userSetup.click(likeButton);
+    await userSetup.click(likeButton);
+
+    expect(mockHandler).toHaveBeenCalledTimes(2);
+  });
 });
