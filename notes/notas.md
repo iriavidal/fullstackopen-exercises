@@ -1439,3 +1439,30 @@ Estado interno (visible / no visible)
   3. El desarrollador decide si el cambio era **intencionado o un error**.
 - **Para qué sirven:** detectar **cambios inesperados en la interfaz** que podrían ser errores accidentales.
 - **Ventaja:** no necesitas escribir muchas pruebas manuales; las instantáneas capturan cambios automáticamente.
+
+## Pruebas de Extremo a Extremo (E2E)
+
+> [Parte 5 -> d Pruebas de extremo a extremo: Playwright](https://fullstackopen.com/es/part5/pruebas_de_extremo_a_extremo_playwright)
+
+### Qué son
+
+- Prueban el **sistema completo** a través de la misma interfaz que usan los usuarios reales (el navegador).
+- Simulan la interacción de un usuario con la aplicación.
+
+### Cómo se hacen
+
+- Se usan navegadores reales o en modo **headless** (sin interfaz gráfica).
+- Herramientas comunes:
+  - **Selenium** (compatible con casi cualquier navegador).
+  - **Cypress** y **Playwright** (las más fáciles y modernas).
+
+### Ventajas
+
+- Muy útiles porque prueban el sistema **tal y como lo usaría un usuario**.
+- Ayudan a detectar errores que las pruebas unitarias o de integración no cubren.
+
+### Inconvenientes
+
+- **Más difíciles de configurar** que las unitarias o de integración.
+- **Lentas**: en proyectos grandes pueden tardar minutos u horas.
+- **Inestables (flaky):** a veces fallan sin que el código haya cambiado.
