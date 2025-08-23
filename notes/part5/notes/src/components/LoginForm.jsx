@@ -22,7 +22,11 @@ const LoginForm = ({
           username
           {/* Input controlado para el nombre de usuario.
               value toma el estado 'username' y onChange llama a handleUsernameChange. */}
-          <input value={username} onChange={handleUsernameChange} />
+          <input
+            data-testid="username"
+            value={username}
+            onChange={handleUsernameChange}
+          />
         </div>
 
         {/* Contenedor del campo de contraseña */}
@@ -31,6 +35,7 @@ const LoginForm = ({
           {/* Input controlado para la contraseña.
               type="password" oculta el texto; value y onChange funcionan igual que en username. */}
           <input
+            data-testid="password"
             type="password"
             value={password}
             onChange={handlePasswordChange}
