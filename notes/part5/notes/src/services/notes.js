@@ -13,11 +13,11 @@ const getAll = () => {
   const request = axios.get(baseUrl);
   // Realiza una solicitud GET a la URL base para obtener las notas almacenadas.
 
-  const nonExisting = {
+  /* const nonExisting = {
     id: 10000,
     content: "This note is not saved to server",
     important: true,
-  };
+  }; */
   // Crea un objeto de nota ficticia que no está guardado en el servidor.
   // Se usa solo como demostración.
 
