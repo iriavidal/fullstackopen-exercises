@@ -1,7 +1,16 @@
 const { test, describe, expect, beforeEach } = require("@playwright/test");
 
 describe("Note app", () => {
-  beforeEach(async ({ page }) => {
+  beforeEach(async ({ page, request }) => {
+    await request.post("http:localhost:3001/api/testing/reset");
+    await request.post("http://localhost:3001/api/users", {
+      data: {
+        name: "Iria Vidal",
+        username: "iria",
+        password: "1234",
+      },
+    });
+
     await page.goto("http://localhost:5173");
   });
 
@@ -61,6 +70,4 @@ describe("Note app", () => {
       ).toBeVisible();
     });
   });
-
-  /* Dado que hemos evitado que las pruebas se ejecuten en paralelo, Playwright ejecuta las pruebas en el orden en que aparecen en el código de prueba. Es decir, primero se realiza la prueba user can log in, donde el usuario inicia sesión en la aplicación. Después de esto se ejecuta la prueba a new note can be created, que también realiza un inicio de sesión, en el bloque beforeEach. ¿Por qué se hace esto, no está ya el usuario conectado gracias a la prueba anterior? No, porque la ejecución de cada prueba comienza desde el "estado cero" del navegador, todos los cambios realizados en el estado del navegador por las pruebas anteriores se resetean. */
 });
