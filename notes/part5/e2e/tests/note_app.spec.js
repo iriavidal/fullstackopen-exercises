@@ -1,5 +1,5 @@
 const { test, describe, expect, beforeEach } = require("@playwright/test");
-const { loginWith } = require("./helper");
+const { loginWith, createNote } = require("./helper");
 
 describe("Note app", () => {
   beforeEach(async ({ page, request }) => {
@@ -20,7 +20,7 @@ describe("Note app", () => {
     await expect(page.getByText("Iria Vidal logged in")).toBeVisible();
   });
 
-  test.only("login fails with wrong password", async ({ page }) => {
+  test("login fails with wrong password", async ({ page }) => {
     // si no tuviera el only: npm test -- -- -g "login fails with wrong password"
     await page.getByRole("button", { name: "log in" }).click();
     await page.getByTestId("username").fill("mluukkai");
@@ -44,9 +44,7 @@ describe("Note app", () => {
     });
 
     test("a new note can be created", async ({ page }) => {
-      await page.getByRole("button", { name: "new note" }).click();
-      await page.getByRole("textbox").fill("a note created by playwright");
-      await page.getByRole("button", { name: "save" }).click();
+      await createNote(page, "a note created by playwright", true);
       await expect(
         page.getByText("a note created by playwright")
       ).toBeVisible();
@@ -54,9 +52,7 @@ describe("Note app", () => {
 
     describe("and a note exists", () => {
       beforeEach(async ({ page }) => {
-        await page.getByRole("button", { name: "new note" }).click();
-        await page.getByRole("textbox").fill("another note by playwright");
-        await page.getByRole("button", { name: "save" }).click();
+        await createNote(page, "another note by playwright", true);
       });
 
       test("importance can be changed", async ({ page }) => {
