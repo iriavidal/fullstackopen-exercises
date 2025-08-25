@@ -21,7 +21,7 @@ const getAll = () => {
   // Crea un objeto de nota ficticia que no está guardado en el servidor.
   // Se usa solo como demostración.
 
-  return request.then((response) => response.data.concat(nonExisting));
+  return request.then((response) => response.data); //.then((response) => response.data.concat(nonExisting));
   // Cuando la solicitud se resuelve, concatena la nota ficticia a los datos recibidos.
 };
 
