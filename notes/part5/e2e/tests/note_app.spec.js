@@ -53,7 +53,8 @@ describe("Note app", () => {
     await expect(page.getByText("Iria Vidal logged in")).toBeVisible();
   });
 
-  test("login fails with wrong password", async ({ page }) => {
+  test.only("login fails with wrong password", async ({ page }) => {
+    // si no tuviera el only: npm test -- -- -g "login fails with wrong password"
     await page.getByRole("button", { name: "log in" }).click();
     await page.getByTestId("username").fill("mluukkai");
     await page.getByTestId("password").fill("wrong");
