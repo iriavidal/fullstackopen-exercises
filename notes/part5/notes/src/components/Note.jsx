@@ -8,7 +8,8 @@ const Note = ({ note, toggleImportance }) => {
   return (
     <li className="note">
       {/* Muestra el contenido de la nota dentro de un elemento <li> con la clase "note". */}
-      {note.content} <button onClick={toggleImportance}>{label}</button>
+      <span>{note.content}</span>{" "}
+      <button onClick={toggleImportance}>{label}</button>
       {/* Botón que al hacer clic llama a la función `toggleImportance` para cambiar la importancia de la nota. */}
     </li>
   );
