@@ -3,8 +3,8 @@ const { loginWith, createNote } = require("./helper");
 
 describe("Note app", () => {
   beforeEach(async ({ page, request }) => {
-    await request.post("http:localhost:3001/api/testing/reset");
-    await request.post("http://localhost:3001/api/users", {
+    await request.post("/api/testing/reset");
+    await request.post("/api/users", {
       data: {
         name: "Iria Vidal",
         username: "iria",
@@ -12,7 +12,7 @@ describe("Note app", () => {
       },
     });
 
-    await page.goto("http://localhost:5173");
+    await page.goto("/");
   });
 
   test("user can log in", async ({ page }) => {
