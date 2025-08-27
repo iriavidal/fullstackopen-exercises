@@ -41,4 +41,27 @@ describe("Blog app", () => {
       await expect(page.getByText("Iria Vidal logged in")).not.toBeVisible();
     });
   });
+
+  describe("When logged in", () => {
+    beforeEach(async ({ page }) => {
+      await page.getByTestId("username").fill("iria");
+      await page.getByTestId("password").fill("1234");
+      await page.getByRole("button", { name: "login" }).click();
+    });
+
+    test("a new blog can be created", async ({ page }) => {
+      await page.getByRole("button", { name: "new blog" }).click();
+      await expect(page.getByText("title")).toBeVisible();
+      await expect(page.getByText("author")).toBeVisible();
+      await expect(page.getByText("url")).toBeVisible();
+
+      await page.getByTestId("title").fill("Blog Test");
+      await page.getByTestId("author").fill("Iria Vidal");
+      await page.getByTestId("url").fill("blog_test.com");
+      await page.getByRole("button", { name: "create" }).click();
+
+      const blogDiv = await page.locator(".blog-summary");
+      await expect(blogDiv).toContainText("Blog Test");
+    });
+  });
 });
