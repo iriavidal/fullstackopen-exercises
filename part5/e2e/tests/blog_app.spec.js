@@ -63,5 +63,21 @@ describe("Blog app", () => {
       const blogDiv = await page.locator(".blog-summary");
       await expect(blogDiv).toContainText("Blog Test");
     });
+
+    test("a blog can be edited", async ({ page }) => {
+      await page.getByRole("button", { name: "new blog" }).click();
+      await page.getByTestId("title").fill("Blog Test");
+      await page.getByTestId("author").fill("Iria Vidal");
+      await page.getByTestId("url").fill("blog_test.com");
+      await page.getByRole("button", { name: "create" }).click();
+
+      const blogDiv = await page.locator(".blog-summary");
+      await expect(blogDiv).toContainText("Blog Test");
+      await page.getByRole("button", { name: "view" }).click();
+
+      await page.getByRole("button", { name: "like" }).click();
+      const blogLikes = await page.locator(".blog-likes");
+      await expect(blogLikes).toContainText("likes 1");
+    });
   });
 });
