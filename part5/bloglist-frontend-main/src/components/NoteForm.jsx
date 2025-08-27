@@ -5,6 +5,7 @@ const NoteForm = ({ handleCreate, newBlog, setNewBlog }) => {
     <form onSubmit={handleCreate}>
       <label htmlFor="title">Title: </label>
       <input
+        data-testid="title"
         type="text"
         value={newBlog.title}
         name="Title"
@@ -15,6 +16,7 @@ const NoteForm = ({ handleCreate, newBlog, setNewBlog }) => {
       <br />
       <label htmlFor="author">Author: </label>
       <input
+        data-testid="author"
         type="text"
         value={newBlog.author}
         name="Author"
@@ -25,6 +27,7 @@ const NoteForm = ({ handleCreate, newBlog, setNewBlog }) => {
       <br />
       <label htmlFor="url">URL: </label>
       <input
+        data-testid="url"
         type="text"
         value={newBlog.url}
         name="URL"
