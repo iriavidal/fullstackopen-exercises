@@ -79,5 +79,36 @@ describe("Blog app", () => {
       const blogLikes = await page.locator(".blog-likes");
       await expect(blogLikes).toContainText("likes 1");
     });
+
+    test("a blog can be deleted", async ({ page }) => {
+      await page.getByRole("button", { name: "new blog" }).click();
+      await page.getByTestId("title").fill("Blog Test");
+      await page.getByTestId("author").fill("Iria Vidal");
+      await page.getByTestId("url").fill("blog_test.com");
+      await page.getByRole("button", { name: "create" }).click();
+
+      const blogDiv = page.locator(".blog-summary");
+      await expect(blogDiv).toContainText("Blog Test");
+
+      await page.getByRole("button", { name: "view" }).click();
+
+      /* NOTE: In Playwright tests the "remove" button only becomes visible after the blog has been updated (e.g. liked). This seems to be because the blog is initially rendered without the populated user field, and the UI only shows "remove" once the blog refreshes with the correct user data. In a real browser this issue does not occur. */
+      await page.getByRole("button", { name: "like" }).click();
+
+      const removeButton = page.getByRole("button", { name: "remove" });
+      await expect(removeButton).toBeVisible();
+
+      /* NOTE: The "dialog" event must be registered before clicking "remove", otherwise Playwright might miss the confirm popup and the test will hang. */
+      page.once("dialog", async (dialog) => {
+        expect(dialog.type()).toBe("confirm");
+        await dialog.accept();
+      });
+
+      await removeButton.click();
+
+      await expect(page.locator(".blog-summary")).toHaveCount(0, {
+        timeout: 10000,
+      });
+    });
   });
 });
