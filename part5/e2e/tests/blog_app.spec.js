@@ -154,5 +154,34 @@ describe("Blog app", () => {
       const removeButton = page.getByRole("button", { name: "remove" });
       await expect(removeButton).not.toBeVisible();
     });
+
+    test("blogs are ordered by descending likes", async ({ page }) => {
+      // Blog 1
+      await page.getByRole("button", { name: "new blog" }).click();
+      await page.getByTestId("title").fill("Blog Test 1");
+      await page.getByTestId("author").fill("Iria Vidal");
+      await page.getByTestId("url").fill("blog_test.com");
+      await page.getByRole("button", { name: "create" }).click();
+
+      // Blog 2
+      await page.getByTestId("title").fill("Blog Test 2");
+      await page.getByTestId("author").fill("Iria Vidal");
+      await page.getByTestId("url").fill("blog_test.com");
+      await page.getByRole("button", { name: "create" }).click();
+
+      /* NOTE: Reload the page to ensure that newly created blogs are fully rendered before we try to interact with them. Without this, Playwright might not detect the new blog elements in time. */
+      await page.reload();
+
+      const blog = page.locator(".blog").nth(1);
+      await blog.getByRole("button", { name: "view" }).click();
+      await blog.getByRole("button", { name: "like" }).click();
+
+      /* NOTE: We reload the page here to ensure that likes are properly reflected and blogs are re-rendered in the correct order. Without this, Playwright sometimes doesn't catch the UI update in time. */
+      await page.reload();
+
+      const blogs = page.locator(".blog");
+      await expect(blogs.first()).toContainText("Blog Test 2");
+      await expect(blogs.nth(1)).toContainText("Blog Test 1");
+    });
   });
 });
