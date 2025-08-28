@@ -11,6 +11,14 @@ describe("Blog app", () => {
       },
     });
 
+    await request.post("http://localhost:3001/api/users", {
+      data: {
+        name: "User Test",
+        username: "user",
+        password: "user",
+      },
+    });
+
     await page.goto("http://localhost:5173");
   });
 
@@ -109,6 +117,42 @@ describe("Blog app", () => {
       await expect(page.locator(".blog-summary")).toHaveCount(0, {
         timeout: 10000,
       });
+    });
+
+    test("a blog can't be deleted by a user who is not the author", async ({
+      page,
+    }) => {
+      await page.getByRole("button", { name: "new blog" }).click();
+      await page.getByTestId("title").fill("Blog Test");
+      await page.getByTestId("author").fill("Iria Vidal");
+      await page.getByTestId("url").fill("blog_test.com");
+      await page.getByRole("button", { name: "create" }).click();
+
+      const blogDiv = page.locator(".blog-summary");
+      await expect(blogDiv).toContainText("Blog Test");
+
+      await page.getByRole("button", { name: "log-out" }).click();
+
+      await expect(page.getByText("log in to application")).toBeVisible();
+      await expect(page.getByText("username")).toBeVisible();
+      await expect(page.getByText("password")).toBeVisible();
+      await page.getByRole("button", { name: "login" }).click();
+
+      await page.getByTestId("username").fill("user");
+      await page.getByTestId("password").fill("user");
+      await page.getByRole("button", { name: "login" }).click();
+
+      await expect(page.getByText("User Test logged in")).toBeVisible();
+
+      await page.getByRole("button", { name: "view" }).click();
+
+      /* Note: we like the blog before looking for the remove button because in Playwright buttons might not render until the DOM updates. This ensures the test behaves consistently. */
+      await page.getByRole("button", { name: "like" }).click();
+      const blogLikes = await page.locator(".blog-likes");
+      await expect(blogLikes).toContainText("likes 1");
+
+      const removeButton = page.getByRole("button", { name: "remove" });
+      await expect(removeButton).not.toBeVisible();
     });
   });
 });
