@@ -1517,3 +1517,100 @@ Imagina una aplicación de contador:
 ### Redux vs Flux
 
 Redux está inspirado en Flux pero simplifica algunos conceptos (como tener un único store en lugar de múltiples).
+
+## Redux
+
+Redux es una librería para manejar el estado (los datos) de tu aplicación de una manera predecible. Se utiliza a menudo con React, pero puede usarse con otras bibliotecas o frameworks.
+Imagina que tu aplicación tiene un estado que puede cambiar (como si un usuario está logueado, los posts que se muestran, etc.). Redux ayuda a manejar esos cambios de manera organizada.
+
+### Los tres principios de Redux
+
+#### 1. Única fuente de verdad
+
+Todo el estado de la aplicación se almacena en un único objeto (un árbol) dentro de un único almacén (store). Esto hace que sea más fácil debuggear e inspeccionar la aplicación.
+
+#### 2. El estado es de solo lectura
+
+La única manera de cambiar el estado es emitiendo una **acción** (un objeto que describe qué pasó). Esto significa que nadie puede cambiar el estado directamente, lo que evita efectos colaterales no deseados.
+
+#### 3. Los cambios se realizan con funciones puras (reducers)
+
+Para especificar cómo las acciones transforman el estado, usamos **reducers**. Un reducer es una función pura que toma el estado anterior y una acción, y devuelve el nuevo estado.
+
+### Conceptos clave
+
+#### Store (Almacén)
+
+Es el objeto que guarda el estado global de la aplicación. Solo hay uno.
+
+#### Action (Acción)
+
+Es un objeto que describe un cambio. Tiene un tipo (que es una string) y puede tener más datos (payload). Por ejemplo:
+
+```javascript
+{
+  type: 'ADD_TODO',
+  text: 'Aprender Redux'
+}
+```
+
+#### Reducer
+
+Es una función que decide cómo cambia el estado ante una acción. Recibe el estado actual y una acción, y devuelve el nuevo estado.
+Ejemplo:
+
+```javascript
+function todoApp(state = initialState, action) {
+  switch (action.type) {
+    case "ADD_TODO":
+      return {
+        ...state,
+        todos: [...state.todos, action.text],
+      };
+    default:
+      return state;
+  }
+}
+```
+
+#### Dispatch
+
+Es el método que se usa para enviar una acción al store. Cuando dispatchas una acción, el store ejecuta el reducer y actualiza el estado.
+
+### Flujo de datos en Redux
+
+1. **Evento**: Algo sucede en la aplicación (ej: el usuario hace clic en un botón).
+2. **Dispatch**: Se envía una acción que describe el evento.
+3. **Reducer**: El store ejecuta el reducer con la acción y el estado actual, y obtiene el nuevo estado.
+4. **Store**: El store actualiza su estado y notifica a las partes de la interfaz que están suscritas.
+5. **UI**: La interfaz se actualiza con el nuevo estado.
+
+### Ejemplo muy simple
+
+Imagina un contador:
+
+- **Estado**: `{ count: 0 }`
+- **Acción**: `{ type: 'INCREMENT' }`
+- **Reducer**:
+
+```javascript
+function counter(state = { count: 0 }, action) {
+  switch (action.type) {
+    case "INCREMENT":
+      return { count: state.count + 1 };
+    default:
+      return state;
+  }
+}
+```
+
+- **Store**:
+
+```javascript
+import { createStore } from "redux";
+let store = createStore(counter);
+// Puedes suscribirte a los cambios
+store.subscribe(() => console.log(store.getState()));
+// Dispatch de una acción
+store.dispatch({ type: "INCREMENT" }); // Logs: { count: 1 }
+```
