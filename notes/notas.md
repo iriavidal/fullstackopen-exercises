@@ -1466,3 +1466,54 @@ Estado interno (visible / no visible)
 - **Más difíciles de configurar** que las unitarias o de integración.
 - **Lentas**: en proyectos grandes pueden tardar minutos u horas.
 - **Inestables (flaky):** a veces fallan sin que el código haya cambiado.
+
+## Arquitectura Flux
+
+### ¿Qué es Flux?
+
+Flux es un patrón de arquitectura para aplicaciones web, creado por Facebook, que complementa a React. Su objetivo es manejar el estado de la aplicación de manera predecible.
+
+### Conceptos Clave
+
+Flux se basa en cuatro componentes principales:
+
+1. **Actions (Acciones)**
+   - Son eventos que envían datos desde la aplicación hacia el **Dispatcher**.
+   - Pueden ser desencadenadas por interacciones del usuario (como hacer clic) o por eventos del sistema.
+   - Son objetos simples que tienen un `type` y pueden llevar datos (payload).
+2. **Dispatcher (Despachador)**
+   - Es el centro de toda la aplicación: recibe las **Actions** y las envía a los **Stores**.
+   - Solo hay un Dispatcher en toda la aplicación.
+   - Actúa como un sistema de mensajería: cuando llega una Action, el Dispatcher la envía a todos los Stores registrados.
+3. **Stores (Almacenes)**
+   - Contienen el estado de la aplicación y la lógica para cambiarlo.
+   - Escuchan las Actions que envía el Dispatcher y, según el tipo de Action, actualizan su estado.
+   - Pueden haber múltiples Stores, cada uno manejando una parte del estado.
+   - Una vez que el estado cambia, el Store emite un evento para notificar a las **Views**.
+4. **Views (Vistas)**
+   - Son componentes de la interfaz de usuario (en React, los componentes).
+   - Escuchan los eventos emitidos por los Stores y se actualizan cuando el estado cambia.
+   - Pueden generar nuevas Actions (por ejemplo, cuando el usuario interactúa).
+
+### Flujo de Datos
+
+El flujo de datos en Flux es **unidireccional**:
+
+1. Las **Views** (componentes) envían **Actions** (por ejemplo, cuando un usuario hace clic en un botón).
+2. Las **Actions** son despachadas a todos los **Stores** por el **Dispatcher**.
+3. Los **Stores** actualizan su estado según la Action y luego emiten un evento de cambio.
+4. Las **Views** escuchan estos eventos y se actualizan con el nuevo estado.
+   Este flujo unidireccional hace que el estado de la aplicación sea más predecible y fácil de entender.
+
+### Ejemplo Sencillo
+
+Imagina una aplicación de contador:
+
+- **Action**: "INCREMENTAR"
+- **Dispatcher**: Recibe la acción "INCREMENTAR" y la envía al Store.
+- **Store** (que guarda el valor del contador): Al recibir "INCREMENTAR", aumenta el contador en 1 y emite un evento de cambio.
+- **View** (componente que muestra el contador): Escucha el evento y se actualiza mostrando el nuevo valor.
+
+### Redux vs Flux
+
+Redux está inspirado en Flux pero simplifica algunos conceptos (como tener un único store en lugar de múltiples).
