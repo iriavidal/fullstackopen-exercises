@@ -3,14 +3,13 @@ import "./App.css"; // Importa estilos CSS para el componente App
 
 // Reducer para manejar las notas
 const noteReducer = (state = [], action) => {
-  // El estado inicial es un array vacío
   if (action.type === "NEW_NOTE") {
-    // Si la acción es de tipo NEW_NOTE
-    state.push(action.payload); // Se agrega la nueva nota al estado (⚠️ mutación directa del array)
-    return state; // Devuelve el nuevo estado con la nota añadida
+    return state.concat(action.payload);
+
+    /* El estado de un reducer debe estar compuesto por objetos inmutables. Si hay un cambio en el estado, el objeto antiguo no se cambia, sino que se reemplaza por un objeto nuevo modificado. Esto es exactamente lo que hicimos con el nuevo reducer: el array anterior se reemplaza por el nuevo. */
   }
 
-  return state; // Si no se reconoce la acción, se devuelve el estado sin cambios
+  return state;
 };
 
 // Creación del store de Redux con el reducer de notas
