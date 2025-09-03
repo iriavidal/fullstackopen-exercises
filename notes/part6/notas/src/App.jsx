@@ -2,7 +2,7 @@
 import { createStore } from "redux";
 
 // Importa el reducer `noteReducer` desde su archivo. Este reducer manejará las acciones relacionadas con las notas.
-import { noteReducer } from "./reducers/noteReducer";
+import noteReducer from "./reducers/noteReducer";
 
 // Crea el almacén (store) de Redux utilizando el reducer `noteReducer`.
 // El store contendrá el estado de la aplicación y permitirá despachar acciones.
@@ -29,10 +29,37 @@ store.dispatch({
   },
 });
 
+const generateId = () => Number((Math.random() * 1000000).toFixed(0));
+
 // Define el componente funcional `App`.
 const App = () => {
+  const addNote = (event) => {
+    event.preventDefault();
+    const content = event.target.note.value;
+    event.target.note.value = "";
+    store.dispatch({
+      type: "NEW_NOTE",
+      payload: {
+        content,
+        important: false,
+        id: generateId(),
+      },
+    });
+  };
+
+  const toggleImportance = (id) => {
+    store.dispatch({
+      type: "TOGGLE_IMPORTANCE",
+      payload: { id },
+    });
+  };
+
   return (
     <div>
+      <form onSubmit={addNote}>
+        <input name="note" />
+        <button type="submit">add</button>
+      </form>
       {/* Renderiza una lista no ordenada (<ul>). */}
       <ul>
         {/* 
@@ -41,7 +68,7 @@ const App = () => {
           Cada nota se renderiza como un elemento de lista (<li>).
         */}
         {store.getState().map((note) => (
-          <li key={note.id}>
+          <li key={note.id} onClick={() => toggleImportance(note.id)}>
             {" "}
             {/* Renderiza el contenido de la nota. */}
             {note.content}{" "}
