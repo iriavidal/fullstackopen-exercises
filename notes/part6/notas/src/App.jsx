@@ -1,16 +1,6 @@
 import { createStore } from "redux"; // Importa createStore para crear un store de Redux
 import "./App.css"; // Importa estilos CSS para el componente App
-
-// Reducer para manejar las notas
-const noteReducer = (state = [], action) => {
-  if (action.type === "NEW_NOTE") {
-    return state.concat(action.payload);
-
-    /* El estado de un reducer debe estar compuesto por objetos inmutables. Si hay un cambio en el estado, el objeto antiguo no se cambia, sino que se reemplaza por un objeto nuevo modificado. Esto es exactamente lo que hicimos con el nuevo reducer: el array anterior se reemplaza por el nuevo. */
-  }
-
-  return state;
-};
+import { noteReducer } from "./reducers/noteReducer";
 
 // Creación del store de Redux con el reducer de notas
 const store = createStore(noteReducer);
