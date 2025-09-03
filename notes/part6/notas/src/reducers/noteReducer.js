@@ -6,9 +6,10 @@ const noteReducer = (state = [], action) => {
   switch (action.type) {
     // Caso para cuando la acción es de tipo "NEW_NOTE"
     case "NEW_NOTE":
-      // Concatena la nueva nota (action.payload) al estado actual
-      // Esto crea un nuevo array inmutably (sin modificar el original)
-      return state.concat(action.payload);
+      // Crea un nuevo array que contiene todos los elementos del estado actual (usando spread operator ...state)
+      // y añade el nuevo elemento (action.payload) al final del array
+      // Esto mantiene la inmutabilidad al no modificar el array original del estado
+      return [...state, action.payload];
 
     // Caso para cuando la acción es de tipo "TOGGLE_IMPORTANCE"
     case "TOGGLE_IMPORTANCE": {
