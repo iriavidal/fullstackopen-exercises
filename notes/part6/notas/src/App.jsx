@@ -1,53 +1,63 @@
-import { createStore } from "redux"; // Importa createStore para crear un store de Redux
-import "./App.css"; // Importa estilos CSS para el componente App
+// Importa la función `createStore` de la librería Redux, que se utiliza para crear el almacén (store) de Redux.
+import { createStore } from "redux";
+
+// Importa el reducer `noteReducer` desde su archivo. Este reducer manejará las acciones relacionadas con las notas.
 import { noteReducer } from "./reducers/noteReducer";
 
-// Creación del store de Redux con el reducer de notas
+// Crea el almacén (store) de Redux utilizando el reducer `noteReducer`.
+// El store contendrá el estado de la aplicación y permitirá despachar acciones.
 const store = createStore(noteReducer);
 
-// Se envía una acción para añadir la primera nota al estado
+// Despacha una acción de tipo "NEW_NOTE" para agregar una nueva nota al store.
+// La acción tiene un payload (carga útil) que contiene el contenido, importancia e ID de la nota.
 store.dispatch({
-  type: "NEW_NOTE", // Tipo de acción
+  type: "NEW_NOTE",
   payload: {
-    // Contenido de la nota
     content: "the app state is in redux store",
     important: true,
     id: 1,
   },
 });
 
-// Se envía una acción para añadir la segunda nota al estado
+// Despacha otra acción "NEW_NOTE" para agregar una segunda nota.
 store.dispatch({
-  type: "NEW_NOTE", // Tipo de acción
+  type: "NEW_NOTE",
   payload: {
-    // Contenido de la nota
     content: "state changes are made with actions",
     important: false,
     id: 2,
   },
 });
 
-// Componente principal de la aplicación
+// Define el componente funcional `App`.
 const App = () => {
   return (
     <div>
+      {/* Renderiza una lista no ordenada (<ul>). */}
       <ul>
-        {store.getState().map(
-          (
-            note // Se obtiene el estado del store y se mapean las notas
-          ) => (
-            <li key={note.id}>
-              {" "}
-              {/* Cada nota se renderiza como un <li> con su id como clave */}
-              {note.content} {/* Texto de la nota */}
-              <strong>{note.important ? "important" : ""}</strong>{" "}
-              {/* Marca si es importante */}
-            </li>
-          )
-        )}
+        {/* 
+          Obtiene el estado actual del store usando `store.getState()`, que devuelve el array de notas.
+          Itera sobre cada nota en el estado usando `map`.
+          Cada nota se renderiza como un elemento de lista (<li>).
+        */}
+        {store.getState().map((note) => (
+          <li key={note.id}>
+            {" "}
+            {/* Renderiza el contenido de la nota. */}
+            {note.content}{" "}
+            {/* 
+              Si la nota es importante, renderiza la palabra "important" en negrita; 
+              de lo contrario, no renderiza nada.
+            */}
+            <strong>{note.important ? "important" : ""}</strong>{" "}
+          </li>
+        ))}
       </ul>
     </div>
   );
 };
 
-export default App; // Exporta el componente para poder usarlo en la app
+// Exporta el componente `App` como exportación por defecto para que pueda ser usado en otros archivos.
+export default App;
+
+/* Este archivo define el componente principal App que utiliza Redux para gestionar el estado de las notas. Crea un almacén de Redux con un reducer específico, despacha acciones para agregar dos notas al estado, y luego renderiza una lista de esas notas. El componente obtiene el estado directamente del almacén usando store.getState(), lo que muestra cómo se puede acceder al estado de Redux en un componente React. Sin embargo, en aplicaciones más realistas, se usarían hooks como useSelector para conectarse al store de manera más eficiente. */
