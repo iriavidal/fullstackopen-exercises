@@ -1,90 +1,60 @@
-// Importa la función `createStore` de la librería Redux, que se utiliza para crear el almacén (store) de Redux.
-import { createStore } from "redux";
+// Importa dos funciones (createNote y toggleImportanceOf) desde el archivo noteReducer
+// Estas funciones son "action creators" que crean las acciones para el reducer
+import { createNote, toggleImportanceOf } from "./reducers/noteReducer";
 
-// Importa el reducer `noteReducer` desde su archivo. Este reducer manejará las acciones relacionadas con las notas.
-import noteReducer from "./reducers/noteReducer";
+// Importa dos hooks de React-Redux:
+// - useSelector: para acceder al estado de Redux desde el componente
+// - useDispatch: para despachar acciones al store de Redux
+import { useSelector, useDispatch } from "react-redux";
 
-// Crea el almacén (store) de Redux utilizando el reducer `noteReducer`.
-// El store contendrá el estado de la aplicación y permitirá despachar acciones.
-const store = createStore(noteReducer);
-
-// Despacha una acción de tipo "NEW_NOTE" para agregar una nueva nota al store.
-// La acción tiene un payload (carga útil) que contiene el contenido, importancia e ID de la nota.
-store.dispatch({
-  type: "NEW_NOTE",
-  payload: {
-    content: "the app state is in redux store",
-    important: true,
-    id: 1,
-  },
-});
-
-// Despacha otra acción "NEW_NOTE" para agregar una segunda nota.
-store.dispatch({
-  type: "NEW_NOTE",
-  payload: {
-    content: "state changes are made with actions",
-    important: false,
-    id: 2,
-  },
-});
-
-const generateId = () => Number((Math.random() * 1000000).toFixed(0));
-
-const createNote = (content) => {
-  return {
-    type: "NEW_NOTE",
-    payload: {
-      content,
-      important: false,
-      id: generateId(),
-    },
-  };
-};
-
-const toggleImportanceOf = (id) => {
-  return {
-    type: "TOGGLE_IMPORTANCE",
-    payload: { id },
-  };
-};
-
-// Define el componente funcional `App`.
+// Define el componente funcional App
 const App = () => {
+  // Inicializa useDispatch para poder enviar acciones al store
+  const dispatch = useDispatch();
+
+  // Utiliza useSelector para obtener el estado de las notas desde el store
+  // state representa todo el estado de Redux, y en este caso se espera que sea un array de notas
+  const notes = useSelector((state) => state);
+
+  // Función para agregar una nueva nota
   const addNote = (event) => {
+    // Previene el comportamiento por defecto del formulario (recarga de página)
     event.preventDefault();
+
+    // Obtiene el valor del campo de entrada con name="note"
     const content = event.target.note.value;
+
+    // Limpia el campo de entrada después de obtener el valor
     event.target.note.value = "";
-    store.dispatch(createNote(content));
+
+    // Despacha la acción de crear nota usando el action creator createNote
+    dispatch(createNote(content));
   };
 
+  // Función para alternar la importancia de una nota
   const toggleImportance = (id) => {
-    store.dispatch(toggleImportanceOf(id));
+    // Despacha la acción de alternar importancia usando el action creator toggleImportanceOf
+    dispatch(toggleImportanceOf(id));
   };
 
+  // Retorna el JSX que representa la interfaz de usuario
   return (
     <div>
+      {/* Formulario para agregar nuevas notas */}
       <form onSubmit={addNote}>
         <input name="note" />
         <button type="submit">add</button>
       </form>
-      {/* Renderiza una lista no ordenada (<ul>). */}
+
+      {/* Lista de notas */}
       <ul>
-        {/* 
-          Obtiene el estado actual del store usando `store.getState()`, que devuelve el array de notas.
-          Itera sobre cada nota en el estado usando `map`.
-          Cada nota se renderiza como un elemento de lista (<li>).
-        */}
-        {store.getState().map((note) => (
+        {/* Mapea cada nota a un elemento de lista */}
+        {notes.map((note) => (
           <li key={note.id} onClick={() => toggleImportance(note.id)}>
-            {" "}
-            {/* Renderiza el contenido de la nota. */}
-            {note.content}{" "}
-            {/* 
-              Si la nota es importante, renderiza la palabra "important" en negrita; 
-              de lo contrario, no renderiza nada.
-            */}
-            <strong>{note.important ? "important" : ""}</strong>{" "}
+            {/* Muestra el contenido de la nota */}
+            {note.content}
+            {/* Muestra "important" en negrita si la nota es importante */}
+            <strong>{note.important ? "important" : ""}</strong>
           </li>
         ))}
       </ul>
@@ -92,7 +62,15 @@ const App = () => {
   );
 };
 
-// Exporta el componente `App` como exportación por defecto para que pueda ser usado en otros archivos.
+// Exporta el componente App como exportación por defecto
 export default App;
 
-/* Este archivo define el componente principal App que utiliza Redux para gestionar el estado de las notas. Crea un almacén de Redux con un reducer específico, despacha acciones para agregar dos notas al estado, y luego renderiza una lista de esas notas. El componente obtiene el estado directamente del almacén usando store.getState(), lo que muestra cómo se puede acceder al estado de Redux en un componente React. Sin embargo, en aplicaciones más realistas, se usarían hooks como useSelector para conectarse al store de manera más eficiente. */
+/* Este archivo define el componente principal App de una aplicación que gestiona notas usando Redux. Utiliza hooks de React-Redux (useSelector y useDispatch) para conectarse al store de Redux. La aplicación permite:
+
+  1. Agregar nuevas notas a través de un formulario
+
+  2. Alternar la importancia de las notas haciendo clic en ellas
+
+  3. Mostrar la lista de notas con su contenido y estado de importancia
+
+El componente se conecta al store de Redux para leer el estado de las notas y despachar acciones cuando se agregan nuevas notas o se cambia su importancia. Los "action creators" (createNote y toggleImportanceOf) se utilizan para generar las acciones de manera consistente. */
