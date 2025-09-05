@@ -28,15 +28,17 @@ const reducer = (state = initialState, action) => {
     case "VOTE":
       const id = action.payload.id;
       const anecdoteToChange = state.find((anecdote) => anecdote.id === id);
-
       const changedAnecdote = {
         ...anecdoteToChange,
         votes: anecdoteToChange.votes + 1,
       };
-
       return state.map((anecdote) =>
         anecdote.id !== id ? anecdote : changedAnecdote
       );
+    case "NEW_ANECDOTE":
+      const newAnecdote = asObject(action.payload);
+
+      return state.concat(newAnecdote);
     default:
       return state;
   }
