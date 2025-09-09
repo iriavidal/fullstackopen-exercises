@@ -1,42 +1,61 @@
-// Importa la biblioteca React, necesaria para escribir componentes de React
-import React from "react";
-
-// Importa ReactDOM específicamente para renderizar la aplicación en el cliente (navegador)
+// Importa ReactDOM desde el paquete react-dom/client para renderizar la aplicación React
 import ReactDOM from "react-dom/client";
 
-// Importa la función createStore de Redux, que se utiliza para crear el almacén de estado global
-import { createStore } from "redux";
-
-// Importa el componente Provider de react-redux, que permite que los componentes de React accedan al store de Redux
+// Importa funciones de Redux para crear el store y combinar múltiples reducers
+import { createStore, combineReducers } from "redux";
+// Importa Provider de react-redux para conectar Redux con la aplicación React
 import { Provider } from "react-redux";
-
 // Importa el componente principal de la aplicación
 import App from "./App";
 
-// Importa el reducer que manejará el estado de las notas
+// Importa el reducer de notas
 import noteReducer from "./reducers/noteReducer";
 
-// Crea el store de Redux utilizando el noteReducer como función reductora
-// El store contendrá todo el estado de la aplicación y manejará las actualizaciones
-const store = createStore(noteReducer);
+// Importa el reducer del filtro
+import filterReducer from "./reducers/filterReducer";
 
-// Obtiene el elemento root del DOM (donde se montará la aplicación) y crea un root de React
-// Luego renderiza la aplicación dentro del Provider que provee el store a todos los componentes
+/* import { createNote } from "./reducers/noteReducer";
+import { filterChange } from "./reducers/filterReducer"; */
+
+// Combina múltiples reducers en un solo reducer raíz
+// Esto permite manejar diferentes partes del estado por separado
+const reducer = combineReducers({
+  notes: noteReducer, // Maneja el estado de las notas
+  filter: filterReducer, // Maneja el estado del filtro
+});
+
+// Crea el store de Redux usando el reducer combinado
+const store = createStore(reducer);
+
+// Muestra el estado inicial del store en la consola
+console.log(store.getState());
+
+// Renderiza la aplicación React en el elemento con id 'root'
 ReactDOM.createRoot(document.getElementById("root")).render(
-  // El componente Provider hace que el store de Redux esté disponible para cualquier componente hijo
-  // que esté conectado a Redux (usando hooks como useSelector o useDispatch)
+  // Provee el store de Redux a toda la aplicación mediante el componente Provider
   <Provider store={store}>
-    {/* El componente App ahora tiene acceso al store de Redux */}
     <App />
   </Provider>
 );
 
-/* Este archivo es el punto de entrada principal de una aplicación React que utiliza Redux para la gestión del estado. Su función principal es:
+/* ReactDOM.createRoot(document.getElementById("root")).render(
+  <Provider store={store}>
+    <div />
+  </Provider>
+); */
 
-  1. Configurar el store de Redux utilizando el reducer importado (noteReducer)
+/* store.subscribe(() => console.log(store.getState()));
+store.dispatch(filterChange("IMPORTANT"));
+store.dispatch(
+  createNote("combineReducers forms one reducer from many simple reducers")
+); */
 
-  2. Proveer el store a toda la aplicación mediante el componente <Provider>
+/* Este archivo es el punto de entrada principal de la aplicación React. Su función principal es:
 
-  3. Renderizar la aplicación React en el elemento DOM con id "root"
+  1. Configurar el store de Redux: Combina múltiples reducers (noteReducer y filterReducer) en un solo reducer raíz usando combineReducers, y crea el store con createStore.
 
-En esencia, este archivo actúa como el puente entre React y Redux, haciendo que el estado global de Redux esté disponible para todos los componentes de la aplicación, permitiendo así una gestión centralizada y predecible del estado. */
+  2. Proveer el store a la aplicación: Utiliza el componente Provider de react-redux para hacer el store disponible en todos los componentes de la aplicación.
+
+  3. Renderizar la aplicación: Usa ReactDOM.createRoot para renderizar el componente App en el elemento HTML con id 'root'.
+
+El archivo actúa como puente entre Redux y React, inicializando el estado global de la aplicación y conectándolo con la interfaz de usuario. Los comentarios muestran ejemplos de cómo se podría usar el store para suscribirse a cambios y despachar acciones, pero están deshabilitados en el código actual. */
