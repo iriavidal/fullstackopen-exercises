@@ -25,12 +25,22 @@ const Notes = () => {
   // Inicializa useDispatch para obtener la función dispatch
   const dispatch = useDispatch();
 
-  // Utiliza useSelector para obtener todas las notas del estado de Redux
-  // state representa todo el estado de Redux, que en este caso es un array de notas
-  const notes = useSelector((state) => state);
+  // Utiliza useSelector para obtener y filtrar las notas del estado de Redux
+  // El estado de Redux tiene dos partes: filter y notes
+  const notes = useSelector(({ filter, notes }) => {
+    // Si el filtro es "ALL", devuelve todas las notas
+    if (filter === "ALL") {
+      return notes;
+    }
+    // Si el filtro es "IMPORTANT", devuelve solo las notas importantes
+    // De lo contrario, devuelve solo las notas no importantes
+    return filter === "IMPORTANT"
+      ? notes.filter((note) => note.important)
+      : notes.filter((note) => !note.important);
+  });
 
   return (
-    // Lista no ordenada que contendrá todas las notas
+    // Lista no ordenada que contendrá todas las notas filtradas
     <ul>
       {/* Mapea cada nota a un componente Note individual */}
       {notes.map((note) => (
@@ -48,13 +58,16 @@ const Notes = () => {
 // Exporta el componente Notes como exportación por defecto
 export default Notes;
 
-/* Este archivo define dos componentes de React para mostrar y gestionar una lista de notas:
+/* Este archivo define dos componentes de React para mostrar y gestionar una lista de notas con funcionalidad de filtrado:
 
-    1. Componente Note: Un componente presentacional que muestra una nota individual. Al hacer clic en una nota, ejecuta la función handleClick que se pasa como prop.
+  1. Componente Note: Un componente presentacional que muestra una nota individual. Al hacer clic en una nota, ejecuta la función handleClick que cambia su estado de importancia.
 
-    2. Componente Notes: Un componente contenedor que se conecta al store de Redux usando los hooks useDispatch y useSelector. Obtiene todas las notas del estado y renderiza una lista de componentes Note. Cada nota tiene un manejador de clic que despacha la acción toggleImportanceOf para cambiar el estado de importancia de la nota correspondiente.
+  2. Componente Notes: Un componente contenedor que se conecta al store de Redux usando los hooks useDispatch y useSelector.
 
-El archivo demuestra la separación de preocupaciones entre componentes presentacionales (Note) y componentes contenedores (Notes), y muestra cómo interactuar con Redux usando hooks modernos en lugar del método tradicional connect.
+    - Obtiene y filtra las notas basándose en el valor del filtro ("ALL", "IMPORTANT", o no importantes)
 
+    - Renderiza una lista de componentes Note
 
- */
+    - Cada nota tiene un manejador de clic que despacha la acción toggleImportanceOf para cambiar su estado de importancia
+
+El archivo demuestra cómo implementar filtrado de datos en una aplicación Redux, donde el estado del filtro se almacena en el store y se utiliza para determinar qué notas mostrar. */
