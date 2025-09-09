@@ -1,38 +1,55 @@
-// Importa el componente NewNote desde la carpeta components
-// NewNote es un formulario para agregar nuevas notas
-import NewNote from "./components/NewNote";
-
-// Importa el componente Notes desde la carpeta components
-// Notes es una lista que muestra todas las notas existentes
+// Importa el componente Notes desde el directorio components
+// Este componente probablemente muestra la lista de notas
 import Notes from "./components/Notes";
 
-// Define el componente principal de la aplicación App
+// Importa el componente NewNote desde el directorio components
+// Este componente probablemente contiene un formulario para crear nuevas notas
+import NewNote from "./components/NewNote";
+
+// Importa el componente VisibilityFilter desde el directorio components
+// Este componente probablemente contiene controles para filtrar las notas
+import VisibilityFilter from "./components/VisibilityFilter";
+
+// Define el componente principal de la aplicación como una función de flecha
 const App = () => {
+  // Retorna la estructura JSX del componente
   return (
-    // Contenedor principal de la aplicación
+    // Contenedor principal div
     <div>
-      {/* Renderiza el componente NewNote que permite agregar nuevas notas */}
+      {/* Componente para crear nuevas notas - normalmente se muestra primero */}
       <NewNote />
 
-      {/* Renderiza el componente Notes que muestra la lista de notas */}
+      {/* Componente para filtrar la visualización de notas */}
+      <VisibilityFilter />
+
+      {/* Componente que muestra la lista de notas */}
       <Notes />
     </div>
   );
 };
 
 // Exporta el componente App como exportación por defecto
+// Esto permite que sea importado en otros archivos (como index.js)
 export default App;
 
-/* Este archivo define el componente principal App de una aplicación de gestión de notas. Es un componente contenedor simple que:
+/* Este archivo define el componente principal App de una aplicación de gestión de notas. Su función principal es:
 
-1. Importa e integra dos componentes hijos:
+  1. Importar y organizar componentes: Reúne tres componentes principales:
 
-  - NewNote: Un formulario para crear nuevas notas
+    - NewNote: Para crear nuevas notas
 
-  - Notes: Una lista que muestra todas las notas existentes
+    - VisibilityFilter: Para filtrar la visualización de notas
 
-2. Organiza la interfaz de usuario de manera sencilla, colocando el formulario de nueva nota arriba y la lista de notas debajo.
+    - Notes: Para mostrar la lista de notas
 
-3. Sirve como punto de entrada principal de la aplicación, conectando los diferentes componentes de la interfaz de usuario.
+  2. Estructurar la interfaz de usuario: Organiza los componentes en un layout simple donde:
 
-Este archivo demuestra un patrón común en React donde el componente principal (App) actúa como un contenedor que organiza y renderiza otros componentes especializados, creando la estructura básica de la aplicación. */
+    - El formulario de nueva nota aparece primero
+
+    - Los controles de filtro aparecen en medio
+
+    - La lista de notas aparece al final
+
+  3. Actuar como contenedor principal: Sirve como el componente raíz que coordina los diferentes módulos de la aplicación, proporcionando una estructura limpia y organizada para la interfaz de usuario.
+
+Este componente sigue el principio de composición de React, donde componentes más pequeños y especializados se combinan para crear una aplicación completa. */
