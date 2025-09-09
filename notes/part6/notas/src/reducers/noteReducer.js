@@ -1,19 +1,23 @@
+// Define el estado inicial del reducer con un array de dos objetos de nota
 const initialState = [
   {
-    content: "reducer defines how redux store works",
-    important: true,
-    id: 1,
+    content: "reducer defines how redux store works", // Contenido de la primera nota
+    important: true, // Importancia de la primera nota (true)
+    id: 1, // ID único de la primera nota
   },
   {
-    content: "state of store can contain any data",
-    important: false,
-    id: 2,
+    content: "state of store can contain any data", // Contenido de la segunda nota
+    important: false, // Importancia de la segunda nota (false)
+    id: 2, // ID único de la segunda nota
   },
 ];
 
 // Define el reducer para manejar el estado de las notas
-// El estado inicial es un array vacío y recibe dos parámetros: state y action
+// El estado inicial es el array definido arriba y recibe dos parámetros: state y action
 const noteReducer = (state = initialState, action) => {
+  // Registra en consola la acción recibida para debugging
+  console.log("ACTION: ", action);
+
   // Evalúa el tipo de acción para determinar cómo actualizar el estado
   switch (action.type) {
     // Caso para crear una nueva nota
@@ -77,10 +81,22 @@ export const toggleImportanceOf = (id) => {
 // Exporta el reducer como exportación por defecto
 export default noteReducer;
 
-/* Este archivo implementa un reducer de Redux para gestionar el estado de las notas y sus correspondientes action creators. El reducer maneja dos tipos de acciones:
+/* Este archivo implementa un reducer de Redux para gestionar el estado de las notas en una aplicación. Su función principal es:
 
-  1. NEW_NOTE: Agrega una nueva nota al estado
+  1. Definir el estado inicial: Incluye dos notas de ejemplo con contenido, importancia e ID.
 
-  2. TOGGLE_IMPORTANCE: Cambia el estado de importancia de una nota específica
+  2. Manejar acciones: Procesa dos tipos de acciones:
 
-Los action creators (createNote y toggleImportanceOf) son funciones que crean las acciones de forma consistente, encapsulando la lógica de construcción de las acciones. El archivo sigue los principios de Redux de inmutabilidad y funciones puras, asegurando que el estado nunca se modifique directamente sino que se creen nuevas versiones del estado para cada cambio. */
+    - NEW_NOTE: Agrega una nueva nota al estado
+
+    - TOGGLE_IMPORTANCE: Cambia el estado de importancia de una nota específica
+
+  3. Proveer action creators: Exporta funciones para crear acciones de manera consistente:
+
+    - createNote: Para crear nuevas notas
+
+    - toggleImportanceOf: Para cambiar la importancia de una nota existente
+
+  4. Mantener la inmutabilidad: Siempre devuelve nuevos objetos/arrays en lugar de modificar el estado existente, siguiendo los principios de Redux.
+
+El archivo sigue el patrón Flux de Redux, donde las acciones describen cambios y el reducer especifica cómo el estado cambia en respuesta a esas acciones. */
