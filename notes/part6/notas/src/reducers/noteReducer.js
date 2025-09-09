@@ -1,6 +1,19 @@
+const initialState = [
+  {
+    content: "reducer defines how redux store works",
+    important: true,
+    id: 1,
+  },
+  {
+    content: "state of store can contain any data",
+    important: false,
+    id: 2,
+  },
+];
+
 // Define el reducer para manejar el estado de las notas
 // El estado inicial es un array vacío y recibe dos parámetros: state y action
-const noteReducer = (state = [], action) => {
+const noteReducer = (state = initialState, action) => {
   // Evalúa el tipo de acción para determinar cómo actualizar el estado
   switch (action.type) {
     // Caso para crear una nueva nota
