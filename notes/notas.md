@@ -1614,3 +1614,116 @@ store.subscribe(() => console.log(store.getState()));
 // Dispatch de una acción
 store.dispatch({ type: "INCREMENT" }); // Logs: { count: 1 }
 ```
+
+### Esquema del proceso
+
+```mermaid
+
+graph TD
+A[Evento de UI] --> B[Action Creator]
+B --> C[Action<br>Objeto con type/payload]
+C --> D[Dispatch]
+D --> E[Store]
+E --> F[Reducer]
+F --> E
+E --> G[Nuevo Estado]
+G --> H[UI se actualiza]
+H --> A
+
+```
+
+**1. Componente/Interfaz de Usuario (UI)**
+
+- **Qué es**: Un botón, formulario, etc. (ej: "Botón para añadir nota").
+- **Rol**: Es el punto de partida. Cuando el usuario interactúa, se **despacha una acción**.
+
+**2. Action Creator**
+
+- **Qué es**: Una función que **crea un objeto de acción**.
+- **Ejemplo**:
+  ```js
+  const createNote = (text) => {
+    return {
+      type: "ADD_NOTE",
+      payload: text,
+    };
+  };
+  ```
+
+**3. Action (Acción)**
+
+- **Qué es**: Un objeto plano de JavaScript que describe **qué pasó**.
+- **Estructura**:
+
+  ```js
+    {
+      type: 'ADD_NOTE',
+      // Tipo de acción (obligatorio)
+      payload: 'Texto de la nota'
+      // Datos (opcional)
+      }
+  ```
+
+**4. Dispatch**
+
+- **Qué es**: Un método del store que **envía la acción** al reducer.
+
+- **Cómo se usa**:
+  ```js
+  store.dispatch(createNote("Mi primera nota"));
+  ```
+
+**5. Store (Almacén)**
+
+- **Qué es**: El objeto central que **guarda el estado global** de la aplicación.
+
+- **Responsabilidades**:
+
+  - Guarda el estado.
+
+  - Permite acceso con `getState()`.
+
+  - Permite despachar acciones con `dispatch(action)`.
+
+  - Registra suscriptores con `subscribe(listener)`.
+
+**6. Reducer**
+
+- **Qué es**: Una **función pura** que toma el estado actual y una acción, y devuelve el **nuevo estado**.
+
+- **Características**:
+
+  - No muta el estado original → Devuelve un nuevo estado.
+
+  - No tiene efectos secundarios (ej: llamadas a API).
+
+- **Ejemplo**:
+  ```js
+  const noteReducer = (state = [], action) => {
+    switch (action.type) {
+      case "ADD_NOTE":
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  };
+  ```
+
+**7. Estado (State)**
+
+- **Qué es**: Un objeto que representa el **estado global** de la aplicación.
+
+- **Ejemplo**:
+
+  ```js
+    {
+      notes: ['Nota 1', 'Nota 2'],
+      filter: 'ALL'
+    }
+  ```
+
+**8. Actualización de la UI**
+
+- **Cómo**: Cuando el estado cambia, el store notifica a los componentes suscritos (ej: con `connect` o hooks de React-Redux).
+
+- **Resultado**: La interfaz se rerenderiza con los nuevos datos.
