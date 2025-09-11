@@ -18,12 +18,8 @@ describe("noteReducer", () => {
 
     // Acción a despachar con un payload que contiene una nueva nota
     const action = {
-      type: "NEW_NOTE",
-      payload: {
-        content: "the app state is in redux store",
-        important: true,
-        id: 1,
-      },
+      type: "notes/createNote",
+      payload: "the app state is in redux store",
     };
 
     // Congela el estado para asegurar que el reducer no lo mute
@@ -57,10 +53,8 @@ describe("noteReducer", () => {
 
     // Acción para cambiar la importancia de la nota con id=2
     const action = {
-      type: "TOGGLE_IMPORTANCE",
-      payload: {
-        id: 2,
-      },
+      type: "notes/toggleImportanceOf",
+      payload: 2,
     };
 
     // Congela el estado para asegurar inmutabilidad
