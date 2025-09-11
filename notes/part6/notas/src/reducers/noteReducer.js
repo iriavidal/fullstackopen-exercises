@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 // Importa createSlice de Redux Toolkit, que simplifica la creación de reducers y acciones
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 const initialState = [
   {
@@ -38,7 +38,7 @@ const noteSlice = createSlice({
         important: !noteToChange.important, // Invierte la propiedad important
       };
 
-      console.log(state);
+      console.log(current(state));
 
       // Devuelve un nuevo array con la nota modificada (enfoque inmutable)
       return state.map((note) => (note.id !== id ? note : changedNote));
