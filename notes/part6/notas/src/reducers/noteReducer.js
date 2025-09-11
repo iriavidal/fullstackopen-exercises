@@ -1,102 +1,60 @@
-// Define el estado inicial del reducer con un array de dos objetos de nota
-const initialState = [
-  {
-    content: "reducer defines how redux store works", // Contenido de la primera nota
-    important: true, // Importancia de la primera nota (true)
-    id: 1, // ID único de la primera nota
-  },
-  {
-    content: "state of store can contain any data", // Contenido de la segunda nota
-    important: false, // Importancia de la segunda nota (false)
-    id: 2, // ID único de la segunda nota
-  },
-];
+/* eslint-disable no-unused-vars */
 
-// Define el reducer para manejar el estado de las notas
-// El estado inicial es el array definido arriba y recibe dos parámetros: state y action
-const noteReducer = (state = initialState, action) => {
-  // Registra en consola la acción recibida para debugging
-  console.log("ACTION: ", action);
-
-  // Evalúa el tipo de acción para determinar cómo actualizar el estado
-  switch (action.type) {
-    // Caso para crear una nueva nota
-    case "NEW_NOTE":
-      // Devuelve un nuevo array con todas las notas existentes y la nueva nota
-      // Usa el spread operator (...) para mantener la inmutabilidad
-      return [...state, action.payload];
-
-    // Caso para alternar la importancia de una nota
-    case "TOGGLE_IMPORTANCE": {
-      // Extrae el ID de la nota a modificar del payload de la acción
-      const id = action.payload.id;
-
-      // Encuentra la nota específica en el estado actual por su ID
-      const noteToChange = state.find((n) => n.id === id);
-
-      // Crea una nueva nota con la propiedad important invertida
-      // Usa spread operator para copiar todas las propiedades de la nota original
-      const changedNote = {
-        ...noteToChange,
-        important: !noteToChange.important,
-      };
-
-      // Devuelve un nuevo array de notas donde:
-      // - Las notas no modificadas se mantienen igual
-      // - La nota modificada se reemplaza por changedNote
-      return state.map((note) => (note.id !== id ? note : changedNote));
-    }
-
-    // Caso por defecto: devuelve el estado actual sin cambios
-    default:
-      return state;
-  }
-};
+// Importa createSlice de Redux Toolkit, que simplifica la creación de reducers y acciones
+import { createSlice } from "@reduxjs/toolkit";
 
 // Función auxiliar para generar IDs únicos para nuevas notas
 const generateId = () => Number((Math.random() * 1000000).toFixed(0));
 
-// Action creator para crear una nueva nota
-// Recibe el contenido de la nota y devuelve una acción con tipo NEW_NOTE
-export const createNote = (content) => {
-  return {
-    type: "NEW_NOTE",
-    payload: {
-      content, // Contenido de la nota
-      important: false, // Por defecto la nota no es importante
-      id: generateId(), // Genera un ID único para la nota
+// Crea un "slice" (porción) del estado de Redux para gestionar las notas
+const noteSlice = createSlice({
+  name: "notes", // Nombre del slice, utilizado como prefijo en los tipos de acción
+  initialState: [], // Estado inicial: un array vacío
+  reducers: {
+    // Reducer para crear una nueva nota
+    createNote(state, action) {
+      const newNote = action.payload; // Extrae la nueva nota del payload de la acción
+      state.push(newNote); // Agrega la nueva nota al estado (mutación permitida por Immer)
     },
-  };
-};
+    // Reducer para alternar la importancia de una nota
+    toggleImportanceOf(state, action) {
+      const id = action.payload; // Extrae el ID de la nota del payload
+      const noteToChange = state.find((n) => n.id === id); // Encuentra la nota a modificar
+      const changedNote = {
+        ...noteToChange, // Copia todas las propiedades de la nota
+        important: !noteToChange.important, // Invierte la propiedad important
+      };
+      // Devuelve un nuevo array con la nota modificada (enfoque inmutable)
+      return state.map((note) => (note.id !== id ? note : changedNote));
+    },
+    // Reducer alternativo para agregar una nota (similar a createNote)
+    appendNote(state, action) {
+      state.push(action.payload); // Agrega la nota al estado (mutación permitida)
+    },
+    // Reducer para establecer todas las notas (útil para inicializar con datos existentes)
+    setNotes(state, action) {
+      return action.payload; // Reemplaza todo el estado con el nuevo array de notas
+    },
+  },
+});
 
-// Action creator para alternar la importancia de una nota
-// Recibe el ID de la nota y devuelve una acción con tipo TOGGLE_IMPORTANCE
-export const toggleImportanceOf = (id) => {
-  return {
-    type: "TOGGLE_IMPORTANCE",
-    payload: { id }, // Incluye el ID de la nota en el payload
-  };
-};
+// Exporta las acciones (action creators) generadas automáticamente por createSlice
+export const { createNote, toggleImportanceOf, appendNote, setNotes } =
+  noteSlice.actions;
 
-// Exporta el reducer como exportación por defecto
-export default noteReducer;
+// Exporta el reducer generado por createSlice
+export default noteSlice.reducer;
 
-/* Este archivo implementa un reducer de Redux para gestionar el estado de las notas en una aplicación. Su función principal es:
+/* Este archivo utiliza Redux Toolkit para crear un slice del estado dedicado a la gestión de notas. Su función principal es:
 
-  1. Definir el estado inicial: Incluye dos notas de ejemplo con contenido, importancia e ID.
+  1. Definir un slice de estado: Crea un conjunto de reducers y acciones para gestionar operaciones CRUD sobre notas.
 
-  2. Manejar acciones: Procesa dos tipos de acciones:
+  2. Simplificar la lógica de Redux: Utiliza createSlice de Redux Toolkit, que genera automáticamente action creators y maneja la inmutabilidad del estado mediante la biblioteca Immer (permitiendo código que "muta" el estado de manera segura).
 
-    - NEW_NOTE: Agrega una nueva nota al estado
+  3. Proveer operaciones para notas: Incluye funciones para:
 
-    - TOGGLE_IMPORTANCE: Cambia el estado de importancia de una nota específica
+    - Crear nuevas notas (createNote, appendNote)
 
-  3. Proveer action creators: Exporta funciones para crear acciones de manera consistente:
+    - Modificar la importancia de una nota (toggleImportanceOf)
 
-    - createNote: Para crear nuevas notas
-
-    - toggleImportanceOf: Para cambiar la importancia de una nota existente
-
-  4. Mantener la inmutabilidad: Siempre devuelve nuevos objetos/arrays en lugar de modificar el estado existente, siguiendo los principios de Redux.
-
-El archivo sigue el patrón Flux de Redux, donde las acciones describen cambios y el reducer especifica cómo el estado cambia en respuesta a esas acciones. */
+    - Establecer una lista completa de notas (setNotes) */
