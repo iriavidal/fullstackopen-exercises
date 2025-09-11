@@ -3,13 +3,26 @@
 // Importa createSlice de Redux Toolkit, que simplifica la creación de reducers y acciones
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = [
+  {
+    content: "reducer defines how redux store works",
+    important: true,
+    id: 1,
+  },
+  {
+    content: "state of store can contain any data",
+    important: false,
+    id: 2,
+  },
+];
+
 // Función auxiliar para generar IDs únicos para nuevas notas
 const generateId = () => Number((Math.random() * 1000000).toFixed(0));
 
 // Crea un "slice" (porción) del estado de Redux para gestionar las notas
 const noteSlice = createSlice({
   name: "notes", // Nombre del slice, utilizado como prefijo en los tipos de acción
-  initialState: [], // Estado inicial: un array vacío
+  initialState, // Estado inicial: un array vacío
   reducers: {
     // Reducer para crear una nueva nota
     createNote(state, action) {
@@ -24,6 +37,9 @@ const noteSlice = createSlice({
         ...noteToChange, // Copia todas las propiedades de la nota
         important: !noteToChange.important, // Invierte la propiedad important
       };
+
+      console.log(state);
+
       // Devuelve un nuevo array con la nota modificada (enfoque inmutable)
       return state.map((note) => (note.id !== id ? note : changedNote));
     },
