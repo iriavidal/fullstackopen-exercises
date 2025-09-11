@@ -1,10 +1,12 @@
 // Importa ReactDOM desde el paquete react-dom/client para renderizar la aplicación React
 import ReactDOM from "react-dom/client";
 
-// Importa funciones de Redux para crear el store y combinar múltiples reducers
-import { createStore, combineReducers } from "redux";
-// Importa Provider de react-redux para conectar Redux con la aplicación React
+// Importa el componente Provider de react-redux para proveer el store de Redux a la aplicación
 import { Provider } from "react-redux";
+
+// Importa configureStore de Redux Toolkit para crear el store de Redux
+import { configureStore } from "@reduxjs/toolkit";
+
 // Importa el componente principal de la aplicación
 import App from "./App";
 
@@ -14,48 +16,38 @@ import noteReducer from "./reducers/noteReducer";
 // Importa el reducer del filtro
 import filterReducer from "./reducers/filterReducer";
 
-/* import { createNote } from "./reducers/noteReducer";
-import { filterChange } from "./reducers/filterReducer"; */
-
-// Combina múltiples reducers en un solo reducer raíz
-// Esto permite manejar diferentes partes del estado por separado
-const reducer = combineReducers({
-  notes: noteReducer, // Maneja el estado de las notas
-  filter: filterReducer, // Maneja el estado del filtro
+// Crea el store de Redux utilizando configureStore de Redux Toolkit
+// configureStore simplifica la configuración del store y habilita buenas prácticas por defecto
+const store = configureStore({
+  reducer: {
+    // Combina múltiples reducers en un store único
+    // El estado del store tendrá una propiedad 'notes' manejada por noteReducer
+    notes: noteReducer,
+    // y una propiedad 'filter' manejada por filterReducer
+    filter: filterReducer,
+  },
 });
 
-// Crea el store de Redux usando el reducer combinado
-const store = createStore(reducer);
-
-// Muestra el estado inicial del store en la consola
+// Muestra el estado inicial del store en la consola para debugging
 console.log(store.getState());
 
 // Renderiza la aplicación React en el elemento con id 'root'
 ReactDOM.createRoot(document.getElementById("root")).render(
   // Provee el store de Redux a toda la aplicación mediante el componente Provider
+  // Esto permite que cualquier componente de la aplicación acceda al store
   <Provider store={store}>
     <App />
   </Provider>
 );
 
-/* ReactDOM.createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <div />
-  </Provider>
-); */
+/* Este archivo es el punto de entrada principal de la aplicación React con Redux. Su función principal es:
 
-/* store.subscribe(() => console.log(store.getState()));
-store.dispatch(filterChange("IMPORTANT"));
-store.dispatch(
-  createNote("combineReducers forms one reducer from many simple reducers")
-); */
-
-/* Este archivo es el punto de entrada principal de la aplicación React. Su función principal es:
-
-  1. Configurar el store de Redux: Combina múltiples reducers (noteReducer y filterReducer) en un solo reducer raíz usando combineReducers, y crea el store con createStore.
+  1. Configurar el store de Redux: Utiliza configureStore de Redux Toolkit para crear el store, combinando múltiples reducers (noteReducer y filterReducer) en un store único.
 
   2. Proveer el store a la aplicación: Utiliza el componente Provider de react-redux para hacer el store disponible en todos los componentes de la aplicación.
 
   3. Renderizar la aplicación: Usa ReactDOM.createRoot para renderizar el componente App en el elemento HTML con id 'root'.
 
-El archivo actúa como puente entre Redux y React, inicializando el estado global de la aplicación y conectándolo con la interfaz de usuario. Los comentarios muestran ejemplos de cómo se podría usar el store para suscribirse a cambios y despachar acciones, pero están deshabilitados en el código actual. */
+Este archivo actúa como puente entre Redux y React, inicializando el estado global de la aplicación y conectándolo con la interfaz de usuario. Redux Toolkit simplifica la configuración del store con valores por defecto útiles como la integración de Redux DevTools y middleware como thunk.
+
+ */
