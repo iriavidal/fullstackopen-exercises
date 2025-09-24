@@ -1,6 +1,8 @@
 import { useDispatch } from "react-redux";
 import { createAnecdote } from "../reducers/anecdoteReducer";
 
+import { setNotification } from "../reducers/notificationReducer";
+
 const AnecdoteForm = () => {
   const dispatch = useDispatch();
 
@@ -9,6 +11,10 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value;
     event.target.anecdote.value = "";
     dispatch(createAnecdote(content));
+  };
+
+  const handleClick = () => {
+    dispatch(setNotification("Nueva notificación de prueba"));
   };
 
   return (
@@ -20,6 +26,8 @@ const AnecdoteForm = () => {
         </div>
         <button type="submit">create</button>
       </form>
+
+      <button onClick={handleClick}>Mostrar notificación</button>
     </div>
   );
 };
