@@ -10,8 +10,18 @@ import NewNote from "./components/NewNote";
 // Este componente probablemente contiene controles para filtrar las notas
 import VisibilityFilter from "./components/VisibilityFilter";
 
+import noteService from "./services/notes";
+import { setNotes } from "./reducers/noteReducer";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+
 // Define el componente principal de la aplicación como una función de flecha
 const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    noteService.getAll().then((notes) => dispatch(setNotes(notes)));
+  }, []);
+
   // Retorna la estructura JSX del componente
   return (
     // Contenedor principal div
