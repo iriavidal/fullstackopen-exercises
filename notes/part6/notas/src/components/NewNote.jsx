@@ -4,13 +4,15 @@ import { useDispatch } from "react-redux";
 // Importa el action creator createNote desde el archivo del reducer de notas
 import { createNote } from "../reducers/noteReducer";
 
+import noteService from "../services/notes";
+
 // Define un componente funcional llamado NewNote
 const NewNote = () => {
   // Inicializa useDispatch para obtener la función dispatch
   const dispatch = useDispatch();
 
   // Define la función addNote que se ejecutará al enviar el formulario
-  const addNote = (event) => {
+  const addNote = async (event) => {
     // Previene el comportamiento por defecto del formulario (recarga de página)
     event.preventDefault();
 
@@ -20,9 +22,8 @@ const NewNote = () => {
     // Limpia el campo de entrada después de obtener el valor
     event.target.note.value = "";
 
-    // Despacha la acción de crear nota usando el action creator createNote
-    // y pasando el contenido de la nota como argumento
-    dispatch(createNote(content));
+    const newNote = await noteService.createNew(content);
+    dispatch(createNote(newNote));
   };
 
   // Retorna el JSX que representa un formulario
