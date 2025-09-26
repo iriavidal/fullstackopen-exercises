@@ -3,9 +3,6 @@
 // Importa createSlice de Redux Toolkit, que simplifica la creación de reducers y acciones
 import { createSlice, current } from "@reduxjs/toolkit";
 
-// Función auxiliar para generar IDs únicos para nuevas notas
-const generateId = () => Number((Math.random() * 1000000).toFixed(0));
-
 // Crea un "slice" (porción) del estado de Redux para gestionar las notas
 const noteSlice = createSlice({
   name: "notes", // Nombre del slice, utilizado como prefijo en los tipos de acción
@@ -13,13 +10,7 @@ const noteSlice = createSlice({
   reducers: {
     // Reducer para crear una nueva nota
     createNote(state, action) {
-      const content = action.payload;
-
-      state.push({
-        content,
-        important: false,
-        id: generateId(),
-      });
+      state.push(action.payload);
     },
     // Reducer para alternar la importancia de una nota
     toggleImportanceOf(state, action) {
