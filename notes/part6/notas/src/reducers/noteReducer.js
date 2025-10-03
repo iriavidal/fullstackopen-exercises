@@ -37,6 +37,13 @@ const noteSlice = createSlice({
   },
 });
 
+export const initializeNotes = () => {
+  return async (dispatch) => {
+    const notes = await noteService.getAll();
+    dispatch(setNotes(notes));
+  };
+};
+
 // Exporta las acciones (action creators) generadas automáticamente por createSlice
 export const { createNote, toggleImportanceOf, appendNote, setNotes } =
   noteSlice.actions;
