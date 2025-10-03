@@ -22,8 +22,8 @@ const NewNote = () => {
     // Limpia el campo de entrada después de obtener el valor
     event.target.note.value = "";
 
-    const newNote = await noteService.createNew(content);
-    dispatch(createNote(newNote));
+    //const newNote = await noteService.createNew(content);
+    dispatch(createNote(content));
   };
 
   // Retorna el JSX que representa un formulario
