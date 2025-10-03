@@ -8,10 +8,10 @@ const noteSlice = createSlice({
   name: "notes", // Nombre del slice, utilizado como prefijo en los tipos de acción
   initialState: [], // Estado inicial: un array vacío
   reducers: {
-    // Reducer para crear una nueva nota
+    /* // Reducer para crear una nueva nota
     createNote(state, action) {
       state.push(action.payload);
-    },
+    }, */
     // Reducer para alternar la importancia de una nota
     toggleImportanceOf(state, action) {
       const id = action.payload; // Extrae el ID de la nota del payload
@@ -37,6 +37,9 @@ const noteSlice = createSlice({
   },
 });
 
+// Exporta las acciones (action creators) generadas automáticamente por createSlice
+export const { toggleImportanceOf, appendNote, setNotes } = noteSlice.actions;
+
 export const initializeNotes = () => {
   return async (dispatch) => {
     const notes = await noteService.getAll();
@@ -44,9 +47,12 @@ export const initializeNotes = () => {
   };
 };
 
-// Exporta las acciones (action creators) generadas automáticamente por createSlice
-export const { createNote, toggleImportanceOf, appendNote, setNotes } =
-  noteSlice.actions;
+export const createNote = (content) => {
+  return async (dispatch) => {
+    const newNote = await noteService.createNew(content);
+    dispatch(appendNote(newNote));
+  };
+};
 
 // Exporta el reducer generado por createSlice
 export default noteSlice.reducer;
